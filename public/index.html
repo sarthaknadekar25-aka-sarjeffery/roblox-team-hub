@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sarthak's Studio — Team Hub | Join the Dev Team</title>
+  <meta name="description" content="Recruitment portal for the Roblox game Sarthak's Studio. Apply as Scripter, Builder, UI Designer, Modeler, Animator, Composer, Manager or Tester." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>" />
+</head>
+<body>
+  <!-- ================= NAV ================= -->
+  <header class="nav" id="top">
+    <div class="container nav-inner">
+      <a class="brand" href="#top" aria-label="Sarthak's Studio home">
+        <span class="brand-mark">⚔️</span>
+        <span class="brand-text">SARTHAK'S <em>STUDIO</em> <small>TEAM HUB</small></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#roles">Roles</a>
+        <a href="#requirements">Requirements</a>
+        <a href="#faq">FAQ</a>
+        <a href="/admin.html" class="muted">Admin</a>
+      </nav>
+      <a href="#apply" class="btn btn-gold btn-sm">Apply Now</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- ================= HERO ================= -->
+    <section class="hero">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <span class="badge"><span class="pulse"></span> 🔥 Recruiting for the 2026 Season</span>
+          <h1>Join <span class="gold">Sarthak's Studio</span> Dev Team</h1>
+          <p class="lead">
+            Sarthak's Studio is a medieval kingdom-building experience on Roblox.
+            We're hiring scripters, builders, artists and testers to ship epic
+            sieges, trading and clan warfare — and share revenue with the team.
+          </p>
+          <div class="hero-actions">
+            <a href="#roles" class="btn btn-gold">View Roles</a>
+            <a href="#apply" class="btn btn-ghost">Apply in 2 min ⚡</a>
+          </div>
+          <p class="hand-note">↳ psst — testers need zero experience. we read every app ourselves, reply in ~48h. <span>— sarthak</span></p>
+          <div class="hero-stats">
+            <div><strong>8</strong><span>Open roles</span></div>
+            <div><strong>~2 min</strong><span>Application</span></div>
+            <div><strong>48h</strong><span>Avg. review time</span></div>
+          </div>
+        </div>
+
+        <!-- Floating 3D cube (pure CSS, lightweight) -->
+        <div class="hero-visual" aria-hidden="true">
+          <div class="cube-scene">
+            <div class="cube" id="hero-cube">
+              <div class="face front">⚔️</div>
+              <div class="face back">🛡️</div>
+              <div class="face right">🏰</div>
+              <div class="face left">⚙️</div>
+              <div class="face top">👑</div>
+              <div class="face bottom">🔥</div>
+            </div>
+          </div>
+          <div class="cube-shadow"></div>
+          <div class="stamp" aria-hidden="true">we actually read<br />every app ✦</div>
+          <div class="orbit-chip chip-a">Luau</div>
+          <div class="orbit-chip chip-b">Rev-share</div>
+          <div class="orbit-chip chip-c">Roblox</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ROLES ================= -->
+    <section class="section" id="roles">
+      <div class="container">
+        <p class="eyebrow">01 — Open positions · updated Sep 2026</p>
+        <h2>Choose your role</h2>
+        <p class="sub">Eight crafts. One empire. Hover a card — it tilts in 3D. Click apply to start your application. <span class="hand-note-inline">(my advice? pick the one you'd do for free on a saturday)</span></p>
+
+        <div class="roles-grid" id="roles-grid">
+          <article class="role-card" data-role="Scripter" tabindex="0">
+            <div class="card-shine"></div>
+            <div class="role-icon">📜</div>
+            <h3>Scripter</h3>
+            <p>Luau gameplay systems, datastores, combat &amp; economy logic with ProfileService.</p>
+            <button class="btn btn-gold btn-sm" data-apply="Scripter">Apply →</button>
+          </article>
+          <article class="role-card" data-role="Builder" tabindex="0">
+            <div class="card-shine"></div>
+            <div class="role-icon">🧱</div>
+            <h3>Builder</h3>
+            <p>Stylised castles, villages &amp; terrain maps built in Studio, optimised for mobile.</p>
+            <button class="btn btn-gold btn-sm" data-apply="Builder">Apply →</button>
+          </article>
+          <article class="role-card" data-role="UI Designer" tabindex="0">
+            <div class="card-shine"></div>
+            <div class="role-icon">🎨</div>
+            <h3>UI Designer</h3>
+            <p>Mobile-first interfaces, icons &amp; HUDs in Figma that feel native to Roblox.</p>
+            <button class="btn btn-gold btn-sm" data-apply="UI Designer">Apply →</button>
+          </article>
+          <article class="role-card" data-role="Modeler" tabindex="0">
+            <div class="card-shine"></div>
+            <div class="role-icon">🗿</div>
+            <h3>Modeler</h3>
+            <p>Low-poly weapons, props &amp; characters in Blender with clean PBR textures.</p>
+            <button class="btn btn-gold btn-sm" data-apply="Modeler">Apply →</button>
+          </article>
+          <article class="role-card" data-role="Animator" tabindex="0">
+            <div class="card-shine"></div>
+            <div class="role-icon">🎬</div>
+            <h3>Animator</h3>
+            <p>Sword swings, walks &amp; emotes with Moon Animator. Rigging wizards welcome.</p>
+            <button class="btn btn-gold btn-sm" data-apply="Animator">Apply →</button>
+          </article>
+          <article class="role-card" data-role="Composer" tabindex="0">
+            <div class="card-shine"></div>
+            <div class="role-icon">🎵</div>
+            <h3>Composer</h3>
+            <p>Epic loops, battle stingers &amp; ambient tavern tracks. Royalty-free delivery.</p>
+            <button class="btn btn-gold btn-sm" data-apply="Composer">Apply →</button>
+          </article>
+          <article class="role-card" data-role="Manager" tabindex="0">
+            <div class="card-shine"></div>
+            <div class="role-icon">👑</div>
+            <h3>Manager</h3>
+            <p>Run the Discord, coordinate sprints and keep the community non-toxic.</p>
+            <button class="btn btn-gold btn-sm" data-apply="Manager">Apply →</button>
+          </article>
+          <article class="role-card" data-role="Tester" tabindex="0">
+            <div class="card-shine"></div>
+            <div class="role-icon">🐞</div>
+            <h3>Tester</h3>
+            <p>Break our game on PC, mobile &amp; console. Write repro steps we can actually fix.</p>
+            <button class="btn btn-gold btn-sm" data-apply="Tester">Apply →</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= REQUIREMENTS ================= -->
+    <section class="section section-alt" id="requirements">
+      <div class="container">
+        <p class="eyebrow">02 — What we expect</p>
+        <h2>Requirements</h2>
+        <div class="req-grid">
+          <div class="req-card">
+            <div class="req-icon">✅</div>
+            <h3>General</h3>
+            <ul>
+              <li>13+ years old (Manager 16+)</li>
+              <li>Active Roblox account in good standing</li>
+              <li>Discord for team communication</li>
+              <li>Portfolio, demo or past work for craft roles</li>
+              <li>Agree to a lightweight NDA on game assets</li>
+            </ul>
+          </div>
+          <div class="req-card">
+            <div class="req-icon">⏱️</div>
+            <h3>Activity</h3>
+            <ul>
+              <li>Min. 5–10 hrs/week depending on role</li>
+              <li>Hit weekly deadlines or flag delays early</li>
+              <li>Join one 30-min voice sync per week</li>
+              <li>Testers: file at least 3 quality bug reports/week</li>
+            </ul>
+          </div>
+          <div class="req-card">
+            <div class="req-icon">🤝</div>
+            <h3>Culture</h3>
+            <ul>
+              <li>Kind, constructive feedback — zero toxicity</li>
+              <li>Mobile players matter: optimise everything</li>
+              <li>Credit for your work, rev-share as we grow</li>
+              <li>Beginners welcome for Tester &amp; Builder trainee</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FOUNDER NOTE (human touch) ============ -->
+    <section class="section founder">
+      <div class="container narrow">
+        <div class="founder-card">
+          <div class="founder-photo" aria-hidden="true">⚔️</div>
+          <div>
+            <p class="eyebrow">A note from the founder</p>
+            <p class="founder-quote">"I started Sarthak's Studio in my bedroom with a laggy laptop and a castle I built at 2am. No studio, no budget — just a siege mechanic I couldn't stop thinking about. If you join now, you're not 'staff'. You're one of the first ten names in the credits. I'll know your timezone, your exams schedule, and your favourite sword. Let's build the thing we wished existed."</p>
+            <p class="hand-note">— sarthak, still writes half the scripts <span>· sep 2026</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= APPLY (multi-step form) ================= -->
+    <section class="section" id="apply">
+      <div class="container narrow">
+        <p class="eyebrow">03 — Application · takes ~2 min</p>
+        <h2>Apply to Sarthak's Studio</h2>
+        <p class="sub">4 quick steps. Your progress autosaves in this browser — close the tab, come back, it's still here.</p>
+
+        <div class="form-shell">
+          <!-- Progress bar -->
+          <ol class="steps" id="steps-bar" aria-label="Application progress">
+            <li class="step active" data-step="1"><span class="dot">1</span><span class="lbl">Role</span></li>
+            <li class="step" data-step="2"><span class="dot">2</span><span class="lbl">About you</span></li>
+            <li class="step" data-step="3"><span class="dot">3</span><span class="lbl">Role Qs</span></li>
+            <li class="step" data-step="4"><span class="dot">4</span><span class="lbl">Review</span></li>
+          </ol>
+          <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+
+          <form id="apply-form" novalidate>
+            <!-- STEP 1 -->
+            <div class="form-step active" id="step-1">
+              <h3>Step 1 — Pick your role</h3>
+              <div class="picker-grid" id="role-picker" role="radiogroup" aria-label="Choose a role"></div>
+              <p class="field-error" id="err-role"></p>
+              <div class="form-nav">
+                <span></span>
+                <button type="button" class="btn btn-gold" data-next="2">Continue →</button>
+              </div>
+            </div>
+
+            <!-- STEP 2 : universal -->
+            <div class="form-step" id="step-2">
+              <h3>Step 2 — About you</h3>
+              <div class="field-grid">
+                <div class="field">
+                  <label for="f-fullName">Full name *</label>
+                  <input id="f-fullName" name="fullName" type="text" placeholder="Alex Carter" autocomplete="name" />
+                  <p class="field-error" data-err="fullName"></p>
+                </div>
+                <div class="field">
+                  <label for="f-email">Email *</label>
+                  <input id="f-email" name="email" type="email" placeholder="you@example.com" autocomplete="email" />
+                  <p class="field-error" data-err="email"></p>
+                </div>
+                <div class="field">
+                  <label for="f-discord">Discord tag *</label>
+                  <input id="f-discord" name="discord" type="text" placeholder="alex_forge" />
+                  <p class="field-error" data-err="discord"></p>
+                </div>
+                <div class="field">
+                  <label for="f-robloxUsername">Roblox username *</label>
+                  <input id="f-robloxUsername" name="robloxUsername" type="text" placeholder="xX_ForgeKing_Xx" />
+                  <p class="field-error" data-err="robloxUsername"></p>
+                </div>
+                <div class="field">
+                  <label for="f-robloxLink">Roblox profile link *</label>
+                  <input id="f-robloxLink" name="robloxLink" type="url" placeholder="https://www.roblox.com/users/..." />
+                  <p class="field-error" data-err="robloxLink"></p>
+                </div>
+                <div class="field">
+                  <label for="f-age">Age <span class="opt">(optional)</span></label>
+                  <input id="f-age" name="age" type="number" min="10" max="99" placeholder="17" />
+                </div>
+                <div class="field">
+                  <label for="f-country">Country *</label>
+                  <input id="f-country" name="country" type="text" placeholder="India" />
+                  <p class="field-error" data-err="country"></p>
+                </div>
+                <div class="field">
+                  <label for="f-timezone">Timezone *</label>
+                  <input id="f-timezone" name="timezone" type="text" placeholder="IST (UTC+5:30)" />
+                  <p class="field-error" data-err="timezone"></p>
+                </div>
+                <div class="field">
+                  <label for="f-hoursPerWeek">Hours available / week *</label>
+                  <select id="f-hoursPerWeek" name="hoursPerWeek">
+                    <option value="">Select…</option>
+                    <option>1–4</option><option>5–9</option><option>10–15</option><option>16–25</option><option>25+</option>
+                  </select>
+                  <p class="field-error" data-err="hoursPerWeek"></p>
+                </div>
+                <div class="field">
+                  <label for="f-compensation">Compensation *</label>
+                  <select id="f-compensation" name="compensation">
+                    <option value="">Select…</option>
+                    <option>Unpaid</option><option>Rev-share</option><option>Paid</option><option>Open to discuss</option>
+                  </select>
+                  <p class="field-error" data-err="compensation"></p>
+                </div>
+                <div class="field field-full">
+                  <label for="f-portfolio">Portfolio links</label>
+                  <input id="f-portfolio" name="portfolio" type="text" placeholder=https://github.com/you, https://… (comma separated)" />
+                </div>
+                <div class="field field-full">
+                  <label for="f-whyJoin">Why do you want to join Sarthak's Studio? * <span class="count" id="count-whyJoin">0 / 1200</span></label>
+                  <textarea id="f-whyJoin" name="whyJoin" rows="4" maxlength="1200" placeholder="Tell us what excites you about the game… (min 20 chars)"></textarea>
+                  <p class="field-error" data-err="whyJoin"></p>
+                </div>
+                <div class="field field-full">
+                  <label for="f-standout">What makes you stand out? * <span class="count" id="count-standout">0 / 1200</span></label>
+                  <textarea id="f-standout" name="standout" rows="4" maxlength="1200" placeholder="Skills, shipped games, anything unique… (min 10 chars)"></textarea>
+                  <p class="field-error" data-err="standout"></p>
+                </div>
+                <label class="check field-full">
+                  <input type="checkbox" id="f-agreeNDA" name="agreeNDA" />
+                  <span>I agree to the Sarthak's Studio NDA — I won't leak unreleased assets or systems. *</span>
+                </label>
+                <p class="field-error field-full" data-err="agreeNDA"></p>
+              </div>
+              <div class="form-nav">
+                <button type="button" class="btn btn-ghost" data-back="1">← Back</button>
+                <button type="button" class="btn btn-gold" data-next="3">Continue →</button>
+              </div>
+            </div>
+
+            <!-- STEP 3 : role-specific (rendered by JS) -->
+            <div class="form-step" id="step-3">
+              <h3>Step 3 — <span id="roleq-title">Role</span> questions</h3>
+              <p class="sub small" id="roleq-sub">Answer like a pro — reviewers read these first.</p>
+              <div class="field-grid" id="role-specific"></div>
+              <div class="form-nav">
+                <button type="button" class="btn btn-ghost" data-back="2">← Back</button>
+                <button type="button" class="btn btn-gold" data-next="4">Review →</button>
+              </div>
+            </div>
+
+            <!-- STEP 4 : review -->
+            <div class="form-step" id="step-4">
+              <h3>Step 4 — Review &amp; submit</h3>
+              <div class="review-box" id="review-box"></div>
+              <div class="form-nav">
+                <button type="button" class="btn btn-ghost" data-back="3">← Back</button>
+                <button type="submit" class="btn btn-gold" id="submit-btn">
+                  <span class="btn-label">Submit application ⚔️</span>
+                  <span class="spinner" hidden></span>
+                </button>
+              </div>
+              <p class="fine">By submitting you agree to be contacted via Email / Discord.</p>
+            </div>
+          </form>
+
+          <!-- SUCCESS -->
+          <div class="success" id="success-screen" hidden>
+            <div class="success-icon">🎉</div>
+            <h3>Application received!</h3>
+            <p>Thanks, <strong id="success-name">friend</strong> — your <strong id="success-role">role</strong> application is in the queue.<br />We usually reply within 48 hours on Discord.</p>
+            <p class="ref">Reference ID: <code id="success-id">—</code></p>
+            <a class="btn btn-gold" id="discord-invite" href="https://discord.gg/empireforge" target="_blank" rel="noopener">Join our Discord 💬</a>
+            <button class="btn btn-ghost" id="apply-again">Submit another application</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FAQ ================= -->
+    <section class="section section-alt" id="faq">
+      <div class="container narrow">
+        <p class="eyebrow">04 — Good to know</p>
+        <h2>FAQ</h2>
+        <div class="faq-list">
+          <details class="faq"><summary>Is this paid work?</summary><p>We start most roles on rev-share with clear milestones. Exceptional contributors move to paid per-task or monthly stipends once the game monetises. Choose “Open to discuss” if flexible.</p></details>
+          <details class="faq"><summary>I'm under 16 — can I still apply?</summary><p>Yes for Tester, Builder trainee, Animator and Composer. Manager requires 16+ for moderation duties.</p></details>
+          <details class="faq"><summary>What happens after I apply?</summary><p>Your app hits our Discord + admin dashboard instantly. We review within ~48h, then reach out on Discord for a short trial task or interview.</p></details>
+          <details class="faq"><summary>Do I need to be online every day?</summary><p>No — just hit your weekly hours and deadlines. One 30-min sync per week is the only fixed meeting.</p></details>
+          <details class="faq"><summary>Who owns what I create?</summary><p>Work made for Sarthak's Studio belongs to the project (covered by the NDA), but you always get public credit + portfolio rights.</p></details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <div class="brand"><span class="brand-mark">⚔️</span><span class="brand-text">SARTHAK'S <em>STUDIO</em></span></div>
+        <p class="muted">A medieval kingdom-building experience on Roblox. Built by players, for players.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#roles">Roles</a>
+        <a href="#apply">Apply</a>
+        <a href="https://discord.gg/empireforge" target="_blank" rel="noopener">Discord</a>
+        <a href="/admin.html">Admin</a>
+      </div>
+    </div>
+    <p class="copy">© 2026 Sarthak's Studio • Team Hub v1.0 • Not affiliated with Roblox Corporation</p>
+  </footer>
+
+  <div class="toast-wrap" id="toast-wrap" aria-live="polite"></div>
+  <canvas id="confetti" hidden></canvas>
+  <script src="/app.js" defer></script>
+</body>
+</html>
