@@ -1,8 +1,3 @@
-// ============================================================
-// SARTHAK'S STUDIO — TEAM HUB  server.js  (v2 fresh build)
-// Recruitment portal backend: Express + JSON-file DB.
-// No build step. Render-ready.
-// ============================================================
 
 import express from "express";
 import dotenv from "dotenv";
@@ -10,25 +5,26 @@ import helmet from "helmet";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
 import nodemailer from "nodemailer";
+import { initHerald, sendVerdictDM } from "./herald.js";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 dotenv.config();
 
-// ---------- Paths (ESM has no __dirname) ----------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PUBLIC_DIR = path.join(__dirname, "public");
 const DATA_DIR = path.join(__dirname, "data");
 const DB_FILE = path.join(DATA_DIR, "applications.json");
 
-// ---------- Config ----------
 const PORT = Number(process.env.PORT || 3000);
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "change_me";
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || "";
 const DISCORD_STAFF_WEBHOOK_URL = process.env.DISCORD_STAFF_WEBHOOK_URL || DISCORD_WEBHOOK_URL;
 const DISCORD_INVITE_URL = process.env.DISCORD_INVITE_URL || "https://discord.gg/empireforge";
+const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN || "";
+const DISCORD_GUILD_ID = process.env.DISCORD_GUILD_ID || "";
 const SMTP_USER = process.env.SMTP_USER || "";
 const SMTP_PASS = String(process.env.SMTP_PASS || "").replace(/\s/g, "");
 
@@ -41,7 +37,6 @@ const VALID_STATUSES = ["pending", "accepted", "rejected"];
 const VALID_COMPENSATION = ["Unpaid", "Rev-share", "Open to discuss"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-// ---------- Database (JSON file, atomic writes) ----------
 function ensureDatabase() {
   try {
     if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -72,7 +67,6 @@ function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
 }
 
-// ---------- Security helpers ----------
 function sanitizeString(value, maxLen = 2000) {
   if (typeof value !== "string") return "";
   return value.replace(/[<>]/g, "").trim().slice(0, maxLen);
@@ -100,7 +94,6 @@ function getClientIp(req) {
   return req.ip || "unknown";
 }
 
-// ---------- Discord webhook (fire-and-forget) ----------
 async function sendDiscordWebhook(app) {
   if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("xxx/yyy") || DISCORD_WEBHOOK_URL === "none") return;
   const embed = {
@@ -130,9 +123,6 @@ async function sendDiscordWebhook(app) {
   }
 }
 
-// ---------- Applicant notifications ----------
-// Email only works if SMTP_USER + SMTP_PASS (Gmail App Password) are set.
-// Discord ping only works if a real webhook URL is set. Both fail soft.
 let mailer = null;
 if (SMTP_USER && SMTP_PASS) {
   mailer = nodemailer.createTransport({
@@ -205,19 +195,18 @@ async function sendStatusDiscord(app, status) {
   }
 }
 
-// ---------- App ----------
+initHerald({ token: DISCORD_BOT_TOKEN, guildId: DISCORD_GUILD_ID });
+
 const app = express();
 app.disable("x-powered-by");
-app.set("trust proxy", 1); // correct IPs + rate limits behind Render's proxy
+app.set("trust proxy", 1);
 
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 app.use(cors({ origin: true }));
 app.use(express.json({ limit: "64kb" }));
 
-// Broad API throttle (the strict per-form limit is separate, below)
 app.use("/api/", rateLimit({ windowMs: 15 * 60 * 1000, max: 300, standardHeaders: true, legacyHeaders: false }));
 
-// Strict: 3 applications per IP per hour
 const applyLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 3,
@@ -226,7 +215,6 @@ const applyLimiter = rateLimit({
   message: { ok: false, error: "Rate limit exceeded. You can submit up to 3 applications per hour." },
 });
 
-// ---------- Validation (mirrors the client-side rules) ----------
 function validateApplication(body) {
   const errors = [];
   const b = body || {};
@@ -250,7 +238,6 @@ function validateApplication(body) {
   return errors;
 }
 
-// ---------- Routes ----------
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, time: new Date().toISOString() });
 });
@@ -326,12 +313,12 @@ app.patch("/api/applications/:id", requireAdmin, async (req, res) => {
   apps[idx].status = status;
   apps[idx].updatedAt = new Date().toISOString();
   saveApplications(apps);
-  const results = await Promise.allSettled([sendStatusEmail(apps[idx], status), sendStatusDiscord(apps[idx], status)]);
+  const results = await Promise.allSettled([sendStatusEmail(apps[idx], status), sendVerdictDM(apps[idx], status)]);
   const notified = {
     email: results[0].status === "fulfilled" && results[0].value === true,
-    discord: results[1].status === "fulfilled" && results[1].value === true,
+    dm: results[1].status === "fulfilled" && results[1].value === true,
   };
-  console.log(`[admin] ${req.params.id} -> ${status} (email:${notified.email} discord:${notified.discord})`);
+  console.log(`[admin] ${req.params.id} -> ${status} (email:${notified.email} dm:${notified.dm})`);
   res.json({ ok: true, application: apps[idx], notified });
 });
 
@@ -345,8 +332,6 @@ app.delete("/api/applications/:id", requireAdmin, (req, res) => {
   res.json({ ok: true, deleted: removed.id });
 });
 
-// ---------- Static frontend ----------
-// Pages never cache (deploys appear on plain refresh); versioned assets (?v=N) cache for a year.
 app.use(
   express.static(PUBLIC_DIR, {
     maxAge: "1h",
@@ -366,7 +351,6 @@ app.get("*", (req, res, next) => {
   res.sendFile(path.join(PUBLIC_DIR, "index.html"));
 });
 
-// ---------- Start ----------
 app.listen(PORT, () => {
   console.log(`⚔️  Sarthak's Studio Team Hub running on http://localhost:${PORT}`);
   console.log(`   Admin dashboard: http://localhost:${PORT}/admin.html`);

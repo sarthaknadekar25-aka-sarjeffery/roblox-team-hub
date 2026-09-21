@@ -1,11 +1,5 @@
-/* ============================================================
-   SARTHAK'S STUDIO — TEAM HUB  app.js  (v2 fresh build)
-   Multi-step application · autosave · validation · motion.
-   Vanilla JS, no frameworks.
-   ============================================================ */
 "use strict";
 
-/* ---------- Constants ---------- */
 var DRAFT_KEY = "sarthaks-studio-draft-v2";
 var DISCORD_INVITE = "https://discord.gg/empireforge";
 var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -80,13 +74,11 @@ var ROLE_QUESTIONS = {
   ]
 };
 
-/* ---------- State ---------- */
 var state = { step: 1, role: "", universal: {}, roleAnswers: {} };
 
 function $(sel, root) { return (root || document).querySelector(sel); }
 function $all(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
 
-/* ---------- Toast ---------- */
 function toast(msg, kind) {
   var wrap = $("#toast-wrap");
   var el = document.createElement("div");
@@ -97,7 +89,6 @@ function toast(msg, kind) {
   setTimeout(function () { el.remove(); }, 3900);
 }
 
-/* ---------- 3D tilt (role + requirement cards, fine pointers only) ---------- */
 function initTilt() {
   if (!window.matchMedia || !window.matchMedia("(pointer: fine)").matches) return;
   $all(".role-card, .req-card").forEach(function (card) {
@@ -121,7 +112,6 @@ function initTilt() {
   });
 }
 
-/* ---------- Full-page cursor: ember glow + magnetic buttons ---------- */
 function initCursor() {
   if (!window.matchMedia || !window.matchMedia("(pointer: fine)").matches) return;
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -159,7 +149,6 @@ function initCursor() {
   });
 }
 
-/* ---------- Scroll reveal ---------- */
 function initReveal() {
   var els = $all(".role-card,.req-card,.faq,.founder-card,.form-shell,.hero-copy > *");
   function showAll() { els.forEach(function (el) { el.classList.add("in"); }); }
@@ -177,7 +166,6 @@ function initReveal() {
   });
 }
 
-/* ---------- Role picker (Step 1) ---------- */
 function renderRolePicker() {
   var picker = $("#role-picker");
   picker.innerHTML = "";
@@ -209,7 +197,6 @@ function setRole(role) {
   saveDraft();
 }
 
-/* ---------- Role-specific questions (Step 3) ---------- */
 function escHtml(s) {
   return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
     return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
@@ -253,7 +240,6 @@ function renderRoleSpecific() {
   });
 }
 
-/* ---------- Character counters ---------- */
 function initCounters() {
   [["#f-whyJoin", "#count-whyJoin"], ["#f-standout", "#count-standout"]].forEach(function (pair) {
     var input = $(pair[0]), count = $(pair[1]);
@@ -264,7 +250,6 @@ function initCounters() {
   });
 }
 
-/* ---------- Draft autosave (localStorage, offline-first) ---------- */
 function collectUniversalFromDOM() {
   function get(id) { var el = $(id); return el ? el.value.trim() : ""; }
   return {
@@ -302,7 +287,7 @@ function saveDraft() {
     localStorage.setItem(DRAFT_KEY, JSON.stringify({
       step: state.step, role: state.role, universal: state.universal, roleAnswers: state.roleAnswers
     }));
-  } catch (e) { /* private mode — non-fatal */ }
+  } catch (e) {}
 }
 
 function loadDraft() {
@@ -327,12 +312,11 @@ function loadDraft() {
     }
     initCounters();
     if (d.step >= 1 && d.step <= 4) gotoStep(d.step, true);
-  } catch (e) { /* corrupt draft — ignore */ }
+  } catch (e) {}
 }
 
 function clearDraft() { try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} }
 
-/* ---------- Steps + validation ---------- */
 function gotoStep(n, silent) {
   state.step = n;
   $all(".form-step").forEach(function (s) { s.classList.toggle("active", s.id === "step-" + n); });
@@ -405,7 +389,6 @@ function validateStep3() {
   return ok;
 }
 
-/* ---------- Review ---------- */
 function renderReview() {
   var u = collectUniversalFromDOM();
   state.universal = u;
@@ -427,7 +410,6 @@ function renderReview() {
   $("#review-box").innerHTML = html;
 }
 
-/* ---------- Submit ---------- */
 function handleSubmit(e) {
   e.preventDefault();
   if (!validateStep1()) { gotoStep(1, true); return; }
@@ -486,7 +468,6 @@ function showSuccess(payload, id) {
   if (s.scrollIntoView) s.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
-/* ---------- Confetti (tiny canvas particles, no libs) ---------- */
 function launchConfetti() {
   var canvas = $("#confetti");
   canvas.hidden = false;
@@ -517,9 +498,6 @@ function launchConfetti() {
   })();
 }
 
-/* ---------- Live code panel: a human writing Luau ----------
-   Cycles varied snippets with bursts, think-pauses, typos that get
-   backspaced, then wipes the board like holding backspace. Loops. */
 var SNIPPETS = [
   { file: "Sarthak.luau", lines: [
     [{ t: "-- ⚔ the founder", c: "tok-c" }],
@@ -606,7 +584,6 @@ function typeCode() {
   var caret = document.getElementById("ed-caret");
   if (!code || !gutter || !caret) return;
 
-  /* build enough reusable line rows for the longest snippet */
   var maxLines = 0, s, i;
   for (s = 0; s < SNIPPETS.length; s++) maxLines = Math.max(maxLines, SNIPPETS[s].lines.length);
   var lineDivs = [];
@@ -641,7 +618,6 @@ function typeCode() {
   var si = Math.floor(Math.random() * SNIPPETS.length);
   var li = 0, ci = 0, scratch = "";
 
-  /* paint current state: finished lines, live line + scratch, caret, counters */
   function paint() {
     var lines = SNIPPETS[si].lines, k, html;
     for (k = 0; k < maxLines; k++) {
@@ -664,7 +640,6 @@ function typeCode() {
     if (colEl) colEl.textContent = ci + scratch.length + 1;
   }
 
-  /* human keystroke rhythm: bursts, punctuation pauses, think pauses */
   function humanDelay(lastChar) {
     var d = 20 + Math.random() * 50;
     if ("({,[=:".indexOf(lastChar) !== -1) d += 130;
@@ -695,7 +670,6 @@ function typeCode() {
     }
   }
 
-  /* typo: fat-finger a few chars, notice, backspace them away */
   function startTypo() {
     scratch = "";
     var n = 2 + Math.floor(Math.random() * 2);
@@ -710,7 +684,6 @@ function typeCode() {
     else setTimeout(typeStep, 180);
   }
 
-  /* hold-backspace wipe, then a fresh random snippet */
   function sweepDelete() {
     var lines = SNIPPETS[si].lines;
     if (li > 0 || ci > 0) {
@@ -732,7 +705,6 @@ function typeCode() {
     }
   }
 
-  /* reduced motion: show the first script finished, no animation */
   if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     si = 0;
     var all = SNIPPETS[0].lines;
@@ -752,7 +724,6 @@ function typeCode() {
   setTimeout(typeStep, 700);
 }
 
-/* ---------- Init ---------- */
 function init() {
   if (window.__bootTimer) clearTimeout(window.__bootTimer);
   initTilt();

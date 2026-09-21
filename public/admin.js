@@ -1,8 +1,3 @@
-/* ============================================================
-   SARTHAK'S STUDIO — TEAM HUB  admin.js  (v2 fresh build)
-   Login · list · filter · review · moderate · CSV export.
-   Vanilla JS, no frameworks.
-   ============================================================ */
 "use strict";
 
 var PW_KEY = "sarthaks-studio-admin";
@@ -32,7 +27,6 @@ function prettyKey(k) {
   return String(k).replace(/([A-Z])/g, " $1").replace(/^./, function (c) { return c.toUpperCase(); });
 }
 
-/* ---------- Auth ---------- */
 function login(password) {
   return fetch("/api/admin/login", {
     method: "POST",
@@ -55,7 +49,6 @@ function showDashboard(show) {
   $("#dashboard").hidden = !show;
 }
 
-/* ---------- Data ---------- */
 function loadApps() {
   return fetch("/api/applications", { headers: authHeaders() }).then(function (res) {
     return res.json().catch(function () { return {}; }).then(function (data) {
@@ -83,7 +76,8 @@ function setStatus(id, status) {
       renderTable();
       if (currentId === id) openDetail(id);
       var bits = [];
-      if (data.notified && data.notified.discord) bits.push("Discord pinged");
+      if (data.notified && data.notified.dm) bits.push("DM sent");
+      else if (data.notified && data.notified.discord) bits.push("Discord pinged");
       if (data.notified && data.notified.email) bits.push("email sent");
       var extra;
       if (bits.length > 0) {
@@ -114,7 +108,6 @@ function deleteApp(id) {
   }).catch(function (e) { toast(e.message, "error"); });
 }
 
-/* ---------- Rendering ---------- */
 function filteredApps() {
   var role = $("#filter-role").value;
   var status = $("#filter-status").value;
@@ -208,7 +201,6 @@ function closeDetail() {
   $("#detail-modal").hidden = true;
 }
 
-/* ---------- CSV export ---------- */
 function exportCSV() {
   if (apps.length === 0) { toast("Nothing to export.", "error"); return; }
   var cols = ["id", "role", "status", "fullName", "email", "discord",
@@ -229,7 +221,6 @@ function exportCSV() {
   toast("Exported " + filteredApps().length + " rows ⬇", "ok");
 }
 
-/* ---------- Init ---------- */
 function init() {
   if (getPw()) {
     showDashboard(true);
