@@ -24,6 +24,18 @@ function firstName(text) {
   return String(text || "friend").split(" ")[0] || "friend";
 }
 
+function waitForHerald(timeoutMs = 15000) {
+  if (!herald) return Promise.resolve(false);
+  if (typeof herald.isReady === "function" && herald.isReady()) return Promise.resolve(true);
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(false), timeoutMs);
+    herald.once("ready", () => {
+      clearTimeout(timer);
+      resolve(true);
+    });
+  });
+}
+
 export async function findApplicantMember(discordTag) {
   if (!herald) return null;
   const clean = String(discordTag || "").replace(/^@/, "").trim().toLowerCase();
@@ -46,6 +58,10 @@ export async function findApplicantMember(discordTag) {
 export async function sendVerdictDM(app, status) {
   const accepted = status === "accepted";
   const name = firstName(app.fullName);
+  if (!await waitForHerald(15000)) {
+    console.warn("[warn] herald not ready in time — DM skipped");
+    return false;
+  }
   try {
     const member = await findApplicantMember(app.discord);
     if (!member) {
