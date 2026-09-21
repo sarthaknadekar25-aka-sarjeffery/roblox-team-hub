@@ -33,7 +33,7 @@ if (ADMIN_PASSWORD === "change_me") {
 
 const VALID_ROLES = ["Scripter", "Builder", "UI Designer", "Modeler", "Animator", "Composer", "Manager", "Tester"];
 const VALID_STATUSES = ["pending", "accepted", "rejected"];
-const VALID_COMPENSATION = ["Unpaid", "Rev-share", "Paid", "Open to discuss"];
+const VALID_COMPENSATION = ["Unpaid", "Rev-share", "Open to discuss"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 // ---------- Database (JSON file, atomic writes) ----------
@@ -152,7 +152,7 @@ function validateApplication(body) {
   const b = body || {};
   if (!VALID_ROLES.includes(b.role)) errors.push("Invalid role selected.");
   if (!b.fullName || b.fullName.trim().length < 2) errors.push("Full name is required (min 2 chars).");
-  if (!isValidEmail(b.email)) errors.push("A valid email address is required.");
+  if (b.email && String(b.email).trim() !== "" && !isValidEmail(b.email)) errors.push("Invalid email address (or leave it blank).");
   if (!b.discord || b.discord.trim().length < 2) errors.push("Discord tag is required.");
   if (!b.robloxUsername || b.robloxUsername.trim().length < 2) errors.push("Roblox username is required.");
   if (!b.timezone || b.timezone.trim().length < 2) errors.push("Country / Timezone is required.");

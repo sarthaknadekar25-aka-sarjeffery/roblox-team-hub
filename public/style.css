@@ -350,3 +350,11 @@ tr.row{cursor:pointer}
   *,*::before,*::after{animation:none !important;transition:none !important}
   .reveal{opacity:1;transform:none}
 }
+
+/* ---------- Frames V3: double hairline borders on major panels ---------- */
+.form-shell,.modal-card,.login-card,.review-box,.table-wrap{
+  outline:1px solid rgba(201,162,75,.14);
+  outline-offset:5px;
+}
+.form-shell{border-color:rgba(201,162,75,.28)}
+.modal-card,.login-card{border-color:rgba(255,106,43,.35)}

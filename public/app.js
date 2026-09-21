@@ -24,7 +24,7 @@ var ROLE_META = {
 var ROLE_QUESTIONS = {
   "Scripter": [
     { key: "luauYears", label: "Years of Luau experience?", type: "select", options: ["< 1 year", "1–2 years", "3–4 years", "5+ years"], required: true },
-    { key: "github", label: "GitHub / code portfolio link", type: "url", placeholder: "https://github.com/you/…", required: true },
+    { key: "github", label: "GitHub / code portfolio link (optional)", type: "url", placeholder: "https://github.com/you/…", required: false },
     { key: "profileService", label: "Have you used ProfileService / DataStoreService?", type: "select", options: ["Yes — shipped with it", "Yes — experimented", "No — willing to learn"], required: true },
     { key: "systemDesc", label: "Describe a game system you built (~100 words)", type: "textarea", placeholder: "e.g. a sword combat system with combos, hitboxes, cooldowns…", required: true, minLen: 50 },
     { key: "hours10", label: "Can you commit 10 hrs/week?", type: "select", options: ["Yes", "No — but 5+ hrs", "No"], required: true },
@@ -241,7 +241,7 @@ function renderRoleSpecific() {
       var itype = q.type === "url" ? "url" : "text";
       control = '<input id="' + id + '" data-rq="' + q.key + '" type="' + itype + '" value="' + escAttr(saved) + '" placeholder="' + escAttr(q.placeholder || "") + '" />';
     }
-    wrap.innerHTML = "<label for=\"" + id + "\">" + escHtml(q.label) + " *</label>" + control +
+    wrap.innerHTML = "<label for=\"" + id + "\">" + escHtml(q.label) + (q.required ? " *" : "") + "</label>" + control +
       '<p class="field-error" data-err-rq="' + q.key + '"></p>';
     box.appendChild(wrap);
   });
@@ -369,7 +369,7 @@ function validateStep2() {
   var ok = true;
   function need(cond, name, msg) { setErr(name, cond ? "" : msg); if (!cond) ok = false; }
   need(u.fullName.length >= 2, "fullName", "Enter your full name.");
-  need(EMAIL_RE.test(u.email), "email", "Enter a valid email.");
+  need(u.email === "" || EMAIL_RE.test(u.email), "email", "Enter a valid email, or leave it blank.");
   need(u.discord.length >= 2, "discord", "Discord tag is required.");
   need(u.robloxUsername.length >= 2, "robloxUsername", "Roblox username is required.");
   need(u.robloxLink.length > 8 && /^https?:\/\//i.test(u.robloxLink), "robloxLink", "Paste your full Roblox profile URL (https://…).");
