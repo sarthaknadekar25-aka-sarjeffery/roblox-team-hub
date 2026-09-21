@@ -521,42 +521,46 @@ function launchConfetti() {
    Cycles varied snippets with bursts, think-pauses, typos that get
    backspaced, then wipes the board like holding backspace. Loops. */
 var SNIPPETS = [
-  { file: "CombatServer.luau", lines: [
-    [{ t: "-- ⚔ siege combat", c: "tok-c" }],
-    [{ t: "local ", c: "tok-k" }, { t: "DMG = ", c: "tok-p" }, { t: "25", c: "tok-n" }],
+  { file: "Sarthak.luau", lines: [
+    [{ t: "-- ⚔ the founder", c: "tok-c" }],
+    [{ t: "local ", c: "tok-k" }, { t: "Sarthak = {}", c: "tok-p" }],
     [],
-    [{ t: "function ", c: "tok-k" }, { t: "swing", c: "tok-f" }, { t: "(p, t)", c: "tok-p" }],
-    [{ t: "  local ", c: "tok-k" }, { t: "s = p.Sword", c: "tok-p" }],
-    [{ t: "  if ", c: "tok-k" }, { t: "s ", c: "tok-p" }, { t: "then", c: "tok-k" }],
-    [{ t: "    t:TakeDamage(DMG)", c: "tok-p" }],
-    [{ t: "    playSteel()", c: "tok-p" }],
-    [{ t: "  ", c: "tok-p" }, { t: "end", c: "tok-k" }],
-    [{ t: "end", c: "tok-k" }]
-  ] },
-  { file: "DataVault.luau", lines: [
-    [{ t: "-- 💾 player data", c: "tok-c" }],
-    [{ t: "local ", c: "tok-k" }, { t: "Vault = {}", c: "tok-p" }],
+    [{ t: 'Sarthak.name = ', c: "tok-p" }, { t: '"Sarthak"', c: "tok-s" }],
+    [{ t: 'Sarthak.role = ', c: "tok-p" }, { t: '"Founder"', c: "tok-s" }],
+    [{ t: 'Sarthak.loves = ', c: "tok-p" }, { t: '"Luau"', c: "tok-s" }],
     [],
-    [{ t: "function ", c: "tok-k" }, { t: "Vault.load", c: "tok-f" }, { t: "(p)", c: "tok-p" }],
-    [{ t: "  return ", c: "tok-k" }, { t: "{", c: "tok-p" }],
-    [{ t: "    gold = ", c: "tok-p" }, { t: "100", c: "tok-n" }, { t: ",", c: "tok-p" }],
-    [{ t: "    level = ", c: "tok-p" }, { t: "1", c: "tok-n" }, { t: ",", c: "tok-p" }],
-    [{ t: "  }", c: "tok-p" }],
+    [{ t: "function ", c: "tok-k" }, { t: "Sarthak.build", c: "tok-f" }, { t: "()", c: "tok-p" }],
+    [{ t: "  forgeEmpire()", c: "tok-p" }],
     [{ t: "end", c: "tok-k" }],
     [],
-    [{ t: "return ", c: "tok-k" }, { t: "Vault", c: "tok-p" }]
+    [{ t: "return ", c: "tok-k" }, { t: "Sarthak", c: "tok-p" }]
   ] },
-  { file: "CastleGate.luau", lines: [
-    [{ t: "-- 🏰 gate tween", c: "tok-c" }],
-    [{ t: "local ", c: "tok-k" }, { t: "gate = script.Parent", c: "tok-p" }],
+  { file: "EmpireForge.luau", lines: [
+    [{ t: "-- 🏰 the game", c: "tok-c" }],
+    [{ t: "local ", c: "tok-k" }, { t: "Game = {}", c: "tok-p" }],
     [],
-    [{ t: "function ", c: "tok-k" }, { t: "open", c: "tok-f" }, { t: "()", c: "tok-p" }],
-    [{ t: "  gate.CanCollide = ", c: "tok-p" }, { t: "false", c: "tok-k" }],
-    [{ t: "  gate.Transparency = ", c: "tok-p" }, { t: "0.5", c: "tok-n" }],
-    [{ t: "  wait(", c: "tok-p" }, { t: "2", c: "tok-n" }, { t: ")", c: "tok-p" }],
-    [{ t: '  gate:Destroy()', c: "tok-p" }],
-    [{ t: "  print(", c: "tok-p" }, { t: '"Gate open!"', c: "tok-s" }, { t: ")", c: "tok-p" }],
-    [{ t: "end", c: "tok-k" }]
+    [{ t: 'Game.name = ', c: "tok-p" }, { t: '"Empire Forge"', c: "tok-s" }],
+    [{ t: 'Game.genre = ', c: "tok-p" }, { t: '"Kingdom RPG"', c: "tok-s" }],
+    [{ t: "Game.hiring = ", c: "tok-p" }, { t: "true", c: "tok-k" }],
+    [],
+    [{ t: "function ", c: "tok-k" }, { t: "Game.play", c: "tok-f" }, { t: "()", c: "tok-p" }],
+    [{ t: "  siegeStarts()", c: "tok-p" }],
+    [{ t: "end", c: "tok-k" }],
+    [],
+    [{ t: "return ", c: "tok-k" }, { t: "Game", c: "tok-p" }]
+  ] },
+  { file: "JoinUs.luau", lines: [
+    [{ t: "-- ⚡ join the team", c: "tok-c" }],
+    [{ t: "local ", c: "tok-k" }, { t: "Team = {}", c: "tok-p" }],
+    [],
+    [{ t: "Team.open = ", c: "tok-p" }, { t: "8", c: "tok-n" }],
+    [{ t: 'Team.pay = ', c: "tok-p" }, { t: '"Rev-share"', c: "tok-s" }],
+    [],
+    [{ t: "function ", c: "tok-k" }, { t: "Team.apply", c: "tok-f" }, { t: "(you)", c: "tok-p" }],
+    [{ t: "  reviewFast(you)", c: "tok-p" }],
+    [{ t: "end", c: "tok-k" }],
+    [],
+    [{ t: "return ", c: "tok-k" }, { t: "Team", c: "tok-p" }]
   ] }
 ];
 var TYPO_LETTERS = "asdfjklqwer";
