@@ -576,4 +576,27 @@ function init() {
   function dy0(e, r) { return ((e.clientY - r.top) / r.height - 0.5) * 30; }
 }
 
+/* ---------- Theme: black default, light optional, remembered ---------- */
+(function initTheme(){
+  var KEY = "sarthaks-studio-theme";
+  function saved(){ try { return localStorage.getItem(KEY) || ""; } catch (e) { return ""; } }
+  function paint(t){
+    document.documentElement.setAttribute("data-theme", t);
+    var b = document.getElementById("theme-toggle");
+    if (b) b.textContent = (t === "light") ? "☀️" : "🌙";
+  }
+  var t = saved();
+  if (t !== "light" && t !== "dark") {
+    t = (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) ? "light" : "dark";
+  }
+  paint(t);
+  document.addEventListener("click", function (e) {
+    if (e.target && e.target.id === "theme-toggle") {
+      var next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+      try { localStorage.setItem(KEY, next); } catch (e2) {}
+      paint(next);
+    }
+  });
+})();
+
 document.addEventListener("DOMContentLoaded", init);
