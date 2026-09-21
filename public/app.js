@@ -720,6 +720,7 @@ function typeCode() {
 
 /* ---------- Init ---------- */
 function init() {
+  if (window.__bootTimer) clearTimeout(window.__bootTimer);
   initTilt();
   initCursor();
   initReveal();

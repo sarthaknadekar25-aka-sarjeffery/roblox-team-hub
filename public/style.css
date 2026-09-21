@@ -364,3 +364,8 @@ tr.row{cursor:pointer}
 }
 .form-shell{border-color:rgba(201,162,75,.28)}
 .modal-card,.login-card{border-color:rgba(255,106,43,.35)}
+
+/* boot-failure banner (only ever shown when app.js doesn't run) */
+.js-warn{position:sticky;top:0;z-index:200;background:#3a1503;border-bottom:1px solid var(--ember);
+  color:#ffd9a8;text-align:center;font-size:.85rem;font-weight:600;padding:.55rem 1rem}
+.js-warn b{color:var(--ember)}

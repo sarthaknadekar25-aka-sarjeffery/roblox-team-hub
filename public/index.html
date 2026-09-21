@@ -8,10 +8,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/style.css?v=4" />
+  <link rel="stylesheet" href="/style.css?v=5" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>" />
 </head>
 <body>
+  <div class="js-warn" id="js-warn" hidden>⚠️ Buttons not responding? The page script failed to load — press <b>Ctrl+F5</b> once for a fresh copy.</div>
+  <script>window.__bootTimer=setTimeout(function(){var w=document.getElementById('js-warn');if(w)w.hidden=false;},4000);</script>
   <!-- ================= NAV ================= -->
   <header class="nav" id="top">
     <div class="container nav-inner">
@@ -392,6 +394,6 @@
 
   <div class="toast-wrap" id="toast-wrap" aria-live="polite"></div>
   <canvas id="confetti" hidden></canvas>
-  <script src="/app.js?v=4" defer></script>
+  <script src="/app.js?v=5" defer></script>
 </body>
 </html>
