@@ -1,8 +1,8 @@
 /* ============================================================
    SARTHAK'S STUDIO — TEAM HUB  style.css
-   Ember-on-charcoal dark • Inter + Caveat • motion everywhere
-   (motion respects prefers-reduced-motion)
-   --gold carries the ember accent (kept name for compatibility)
+   Ember-on-charcoal dark • Inter + Caveat • mobile-first
+   Motion throughout (disabled for prefers-reduced-motion).
+   NOTE: --gold carries the ember accent (name kept for compat).
    ============================================================ */
 :root{
   --bg:#0b0b0d; --bg2:#111114; --card:#141417; --card2:#1a1a20;
@@ -17,7 +17,7 @@
 [hidden]{display:none !important}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-/* buttons never inherit text/font by default — this was the black-text bug */
+/* buttons never inherit text/font by default — inherit explicitly */
 button{font:inherit;color:inherit}
 body{
   margin:0; font-family:var(--font); color:var(--text);
@@ -146,7 +146,7 @@ a{color:inherit}
   transition:opacity .25s}
 .role-card:hover .card-shine{opacity:1}
 
-/* scroll reveal — JS adds .reveal, observer adds .in */
+/* scroll reveal — JS adds .reveal, the observer adds .in */
 .reveal{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}
 .reveal.in{opacity:1;transform:none}
 .role-card.reveal{transform:none}

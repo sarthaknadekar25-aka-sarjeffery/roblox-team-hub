@@ -317,7 +317,20 @@ app.delete("/api/applications/:id", requireAdmin, (req, res) => {
 });
 
 // ---------- Static frontend ----------
-app.use(express.static(PUBLIC_DIR, { maxAge: "1h", extensions: ["html"] }));
+// Versioned assets (?v=N) cache for a year; HTML never caches so deploys show up on plain refresh.
+app.use(
+  express.static(PUBLIC_DIR, {
+    maxAge: "1h",
+    extensions: ["html"],
+    setHeaders(res, filePath) {
+      if (filePath.endsWith(".html")) {
+        res.setHeader("Cache-Control", "no-store");
+      } else if (res.req && res.req.url && res.req.url.includes("?v=")) {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      }
+    },
+  })
+);
 
 // Fallback to index for unknown non-API routes
 app.get("*", (req, res, next) => {
