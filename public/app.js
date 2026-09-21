@@ -110,7 +110,7 @@ function toast(msg, kind = "") {
    ============================================================ */
 function initTilt() {
   if (!window.matchMedia("(pointer: fine)").matches) return;
-  $$(".role-card").forEach((card) => {
+  $$(".role-card, .req-card").forEach((card) => {
     let raf = null;
     card.addEventListener("mousemove", (e) => {
       const r = card.getBoundingClientRect();
@@ -591,6 +591,46 @@ function init() {
     el.classList.add("reveal");
     el.style.transitionDelay = ((i % 8) * 55) + "ms";
     io.observe(el);
+  });
+})();
+
+/* ---------- Full-page cursor: ember glow + magnetic buttons ---------- */
+(function initCursor(){
+  if (!window.matchMedia || !window.matchMedia("(pointer: fine)").matches) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var glow = document.createElement("div");
+  glow.id = "cursor-glow";
+  glow.setAttribute("aria-hidden", "true");
+  document.body.appendChild(glow);
+  var gx = window.innerWidth / 2, gy = 200, tx = gx, ty = gy, raf = null;
+  function loop(){
+    gx += (tx - gx) * 0.08;
+    gy += (ty - gy) * 0.08;
+    glow.style.transform = "translate(" + gx + "px," + gy + "px)";
+    if (Math.abs(tx - gx) > 0.5 || Math.abs(ty - gy) > 0.5) { raf = requestAnimationFrame(loop); }
+    else { raf = null; }
+  }
+  document.addEventListener("mousemove", function (e) {
+    tx = e.clientX; ty = e.clientY;
+    if (!raf) raf = requestAnimationFrame(loop);
+  }, { passive: true });
+  /* primary buttons lean gently toward the cursor */
+  var mags = Array.prototype.slice.call(document.querySelectorAll(".hero-actions .btn, .form-nav .btn-gold"));
+  mags.forEach(function (btn) {
+    var mraf = null;
+    btn.addEventListener("mousemove", function (e) {
+      var r = btn.getBoundingClientRect();
+      var dx = e.clientX - (r.left + r.width / 2);
+      var dy = e.clientY - (r.top + r.height / 2);
+      if (mraf) cancelAnimationFrame(mraf);
+      mraf = requestAnimationFrame(function () {
+        btn.style.transform = "translate(" + (dx * 0.12).toFixed(1) + "px," + (dy * 0.18).toFixed(1) + "px)";
+      });
+    });
+    btn.addEventListener("mouseleave", function () {
+      if (mraf) cancelAnimationFrame(mraf);
+      btn.style.transform = "";
+    });
   });
 })();
 
