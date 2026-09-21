@@ -263,27 +263,4 @@ function init() {
   $("#admin-pass").focus();
 }
 
-/* ---------- Theme: shared with the main site ---------- */
-(function initTheme(){
-  var KEY = "sarthaks-studio-theme";
-  function paint(t){
-    document.documentElement.setAttribute("data-theme", t);
-    var b = document.getElementById("theme-toggle");
-    if (b) b.textContent = (t === "light") ? "☀️" : "🌙";
-  }
-  var t = "";
-  try { t = localStorage.getItem(KEY) || ""; } catch (e) {}
-  if (t !== "light" && t !== "dark") {
-    t = (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) ? "light" : "dark";
-  }
-  paint(t);
-  document.addEventListener("click", function (e) {
-    if (e.target && e.target.id === "theme-toggle") {
-      var next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
-      try { localStorage.setItem(KEY, next); } catch (e2) {}
-      paint(next);
-    }
-  });
-})();
-
 document.addEventListener("DOMContentLoaded", init);

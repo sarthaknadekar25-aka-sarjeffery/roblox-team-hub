@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <script>try{var t=localStorage.getItem("sarthaks-studio-theme");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.setAttribute("data-theme",t)}catch(e){document.documentElement.setAttribute("data-theme","dark")}</script>
+
   <link rel="stylesheet" href="/style.css" />
   <style>
     .admin-wrap{width:min(1180px,94%);margin:0 auto;padding:2rem 0 4rem}
@@ -15,7 +15,7 @@
     .admin-top h1{font-size:1.6rem;margin:0}
     .badges{display:flex;gap:.5rem;flex-wrap:wrap}
     .pill{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:.3rem .85rem;font-size:.8rem;font-weight:700}
-    .pill.gold{background:rgba(255,215,0,.12);border-color:rgba(255,215,0,.5);color:var(--gold)}
+    .pill.gold{background:rgba(255,106,43,.12);border-color:rgba(255,106,43,.5);color:var(--gold)}
     .pill.green{background:rgba(81,207,102,.12);border-color:rgba(81,207,102,.5);color:#8ce99a}
     .pill.red{background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.5);color:#ffa8a8}
     .filters{display:flex;gap:.7rem;flex-wrap:wrap;margin:1rem 0}
@@ -24,10 +24,10 @@
     table{width:100%;border-collapse:collapse;font-size:.88rem;min-width:760px}
     th,td{text-align:left;padding:.7rem .8rem;border-bottom:1px solid var(--line);vertical-align:top}
     th{color:var(--gold);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;background:var(--table-head);position:sticky;top:0}
-    tr:hover td{background:rgba(255,215,0,.04)}
+    tr:hover td{background:rgba(255,106,43,.05)}
     tr.row{cursor:pointer}
     .status{font-weight:700;padding:.2rem .65rem;border-radius:999px;font-size:.75rem;white-space:nowrap}
-    .status.pending{background:rgba(255,215,0,.14);color:var(--gold)}
+    .status.pending{background:rgba(255,106,43,.14);color:var(--gold)}
     .status.accepted{background:rgba(81,207,102,.16);color:#8ce99a}
     .status.rejected{background:rgba(255,107,107,.16);color:#ffa8a8}
     .row-actions{display:flex;gap:.35rem;flex-wrap:wrap}
@@ -36,7 +36,7 @@
     .mini.ok{border-color:rgba(81,207,102,.6)} .mini.bad{border-color:rgba(255,107,107,.6)}
     /* login overlay */
     .login-overlay{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:rgba(10,10,22,.9);backdrop-filter:blur(8px);padding:1rem}
-    .login-card{background:var(--card);border:1px solid rgba(255,215,0,.4);border-radius:18px;padding:2rem;width:min(400px,100%);text-align:center;box-shadow:var(--shadow)}
+    .login-card{background:var(--card);border:1px solid rgba(255,106,43,.45);border-radius:18px;padding:2rem;width:min(400px,100%);text-align:center;box-shadow:var(--shadow)}
     .login-card input{width:100%;background:var(--input);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:.75rem;font:inherit;margin:.8rem 0}
     /* detail modal */
     .modal{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.65);padding:1rem}
@@ -74,7 +74,6 @@
       <span style="flex:1"></span>
       <button class="btn btn-ghost btn-sm" id="export-btn">⬇ Export CSV</button>
       <button class="btn btn-ghost btn-sm" id="refresh-btn">↻ Refresh</button>
-      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light / dark mode" title="Toggle light / dark">🌙</button>
       <button class="btn btn-ghost btn-sm" id="logout-btn">Logout</button>
     </div>
 
