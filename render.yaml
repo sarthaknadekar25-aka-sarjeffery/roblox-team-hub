@@ -1,5 +1,3 @@
-# Render Blueprint — deploys roblox-team-hub as a web service.
-# Push this repo to GitHub, then Render → New → Blueprint → select repo.
 services:
   - type: web
     name: roblox-team-hub
