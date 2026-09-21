@@ -133,7 +133,7 @@ a{color:inherit}
 .editor-body{display:flex;min-height:300px;padding:.8rem 0;font-family:ui-monospace,'Cascadia Code',Consolas,monospace;
   font-size:.8rem;line-height:1.7}
 .ed-gutter{padding:0 .6rem 0 .9rem;text-align:right;color:#5a5248;user-select:none;flex:none;border-right:1px solid var(--line)}
-.editor-code{flex:1;padding-right:.9rem;white-space:pre-wrap;word-break:break-word;color:var(--text)}
+.editor-code{flex:1;padding-right:.9rem;white-space:pre-wrap;word-break:break-word;color:var(--text);transition:opacity .18s ease}
 .ed-line{min-height:1.7em}
 .tok-k{color:var(--ember);font-weight:700}.tok-s{color:#9ece8f}.tok-n{color:var(--brass)}
 .tok-c{color:#6e6257;font-style:italic}.tok-f{color:#ffd9a8}.tok-p{color:#e9e2d4}

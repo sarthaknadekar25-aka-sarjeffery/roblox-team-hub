@@ -530,24 +530,37 @@ var SNIPPETS = [
     [{ t: 'Sarthak.loves = ', c: "tok-p" }, { t: '"Luau"', c: "tok-s" }],
     [],
     [{ t: "function ", c: "tok-k" }, { t: "Sarthak.build", c: "tok-f" }, { t: "()", c: "tok-p" }],
-    [{ t: "  forgeEmpire()", c: "tok-p" }],
+    [{ t: "  forgeWorlds()", c: "tok-p" }],
     [{ t: "end", c: "tok-k" }],
     [],
     [{ t: "return ", c: "tok-k" }, { t: "Sarthak", c: "tok-p" }]
   ] },
-  { file: "EmpireForge.luau", lines: [
-    [{ t: "-- 🏰 the game", c: "tok-c" }],
-    [{ t: "local ", c: "tok-k" }, { t: "Game = {}", c: "tok-p" }],
+  { file: "Studio.luau", lines: [
+    [{ t: "-- 🏰 the studio", c: "tok-c" }],
+    [{ t: "local ", c: "tok-k" }, { t: "Studio = {}", c: "tok-p" }],
     [],
-    [{ t: 'Game.name = ', c: "tok-p" }, { t: '"Empire Forge"', c: "tok-s" }],
-    [{ t: 'Game.genre = ', c: "tok-p" }, { t: '"Kingdom RPG"', c: "tok-s" }],
-    [{ t: "Game.hiring = ", c: "tok-p" }, { t: "true", c: "tok-k" }],
+    [{ t: "Studio.name = ", c: "tok-p" }, { t: '"Sarthak\'s"', c: "tok-s" }],
+    [{ t: "Studio.born = ", c: "tok-p" }, { t: "2026", c: "tok-n" }],
+    [{ t: "Studio.hiring = ", c: "tok-p" }, { t: "true", c: "tok-k" }],
     [],
-    [{ t: "function ", c: "tok-k" }, { t: "Game.play", c: "tok-f" }, { t: "()", c: "tok-p" }],
-    [{ t: "  siegeStarts()", c: "tok-p" }],
+    [{ t: "function ", c: "tok-k" }, { t: "Studio.ship", c: "tok-f" }, { t: "()", c: "tok-p" }],
+    [{ t: "  buildPlay()", c: "tok-p" }],
     [{ t: "end", c: "tok-k" }],
     [],
-    [{ t: "return ", c: "tok-k" }, { t: "Game", c: "tok-p" }]
+    [{ t: "return ", c: "tok-k" }, { t: "Studio", c: "tok-p" }]
+  ] },
+  { file: "Roles.luau", lines: [
+    [{ t: "-- 📜 open roles", c: "tok-c" }],
+    [{ t: "local ", c: "tok-k" }, { t: "Roles = {}", c: "tok-p" }],
+    [],
+    [{ t: "Roles.count = ", c: "tok-p" }, { t: "8", c: "tok-n" }],
+    [{ t: 'Roles.top = ', c: "tok-p" }, { t: '"Scripter"', c: "tok-s" }],
+    [],
+    [{ t: "function ", c: "tok-k" }, { t: "Roles.list", c: "tok-f" }, { t: "()", c: "tok-p" }],
+    [{ t: "  showBoard()", c: "tok-p" }],
+    [{ t: "end", c: "tok-k" }],
+    [],
+    [{ t: "return ", c: "tok-k" }, { t: "Roles", c: "tok-p" }]
   ] },
   { file: "JoinUs.luau", lines: [
     [{ t: "-- ⚡ join the team", c: "tok-c" }],
@@ -561,6 +574,19 @@ var SNIPPETS = [
     [{ t: "end", c: "tok-k" }],
     [],
     [{ t: "return ", c: "tok-k" }, { t: "Team", c: "tok-p" }]
+  ] },
+  { file: "SiegeNight.luau", lines: [
+    [{ t: "-- 🔥 siege night", c: "tok-c" }],
+    [{ t: "local ", c: "tok-k" }, { t: "Event = {}", c: "tok-p" }],
+    [],
+    [{ t: 'Event.day = ', c: "tok-p" }, { t: '"Saturday"', c: "tok-s" }],
+    [{ t: 'Event.mode = ', c: "tok-p" }, { t: '"Siege"', c: "tok-s" }],
+    [],
+    [{ t: "function ", c: "tok-k" }, { t: "Event.start", c: "tok-f" }, { t: "()", c: "tok-p" }],
+    [{ t: "  hornBlow()", c: "tok-p" }],
+    [{ t: "end", c: "tok-k" }],
+    [],
+    [{ t: "return ", c: "tok-k" }, { t: "Event", c: "tok-p" }]
   ] }
 ];
 var TYPO_LETTERS = "asdfjklqwer";
@@ -640,9 +666,9 @@ function typeCode() {
 
   /* human keystroke rhythm: bursts, punctuation pauses, think pauses */
   function humanDelay(lastChar) {
-    var d = 22 + Math.random() * 64;
-    if ("({,[=:".indexOf(lastChar) !== -1) d += 140;
-    if (Math.random() < 0.07) d += 380;
+    var d = 20 + Math.random() * 50;
+    if ("({,[=:".indexOf(lastChar) !== -1) d += 130;
+    if (Math.random() < 0.07) d += 350;
     return d;
   }
 
@@ -662,10 +688,10 @@ function typeCode() {
     } else if (li < lines.length - 1) {
       li++; ci = 0;
       paint();
-      setTimeout(typeStep, 200 + Math.random() * 200);
+      setTimeout(typeStep, 180 + Math.random() * 160);
     } else {
       paint();
-      setTimeout(sweepDelete, 2400);
+      setTimeout(sweepDelete, 2000);
     }
   }
 
@@ -696,9 +722,13 @@ function typeCode() {
     } else {
       var next = si;
       while (next === si) next = Math.floor(Math.random() * SNIPPETS.length);
-      si = next; li = 0; ci = 0; scratch = "";
-      paint();
-      setTimeout(typeStep, 600);
+      code.style.opacity = "0";
+      setTimeout(function () {
+        si = next; li = 0; ci = 0; scratch = "";
+        paint();
+        code.style.opacity = "1";
+        setTimeout(typeStep, 500);
+      }, 200);
     }
   }
 
