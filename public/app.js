@@ -517,11 +517,97 @@ function launchConfetti() {
   })();
 }
 
+/* ---------- Live code panel: types Luau on loop ---------- */
+var CODE_LINES = [
+  [{ t: "-- ⚔ siege combat server", c: "tok-c" }],
+  [{ t: "local ", c: "tok-k" }, { t: "Combat = {}", c: "tok-p" }],
+  [{ t: "local ", c: "tok-k" }, { t: "DAMAGE = ", c: "tok-p" }, { t: "25", c: "tok-n" }],
+  [],
+  [{ t: "function ", c: "tok-k" }, { t: "Combat.swing", c: "tok-f" }, { t: "(player, target)", c: "tok-p" }],
+  [{ t: "  local ", c: "tok-k" }, { t: "sword = player.Backpack:FindFirstChild(", c: "tok-p" }, { t: '"Sword"', c: "tok-s" }, { t: ")", c: "tok-p" }],
+  [{ t: "  if not ", c: "tok-k" }, { t: "sword ", c: "tok-p" }, { t: "then return end", c: "tok-k" }],
+  [{ t: "  target:TakeDamage(DAMAGE)", c: "tok-p" }],
+  [{ t: "  game.Reverb.Steel:Play()", c: "tok-p" }],
+  [{ t: "end", c: "tok-k" }],
+  [],
+  [{ t: "return ", c: "tok-k" }, { t: "Combat", c: "tok-p" }]
+];
+
+function lineText(line) {
+  var s = "";
+  for (var i = 0; i < line.length; i++) s += line[i].t;
+  return s;
+}
+
+function typeCode() {
+  var code = document.getElementById("ed-code");
+  var gutter = document.getElementById("ed-gutter");
+  var ln = document.getElementById("ed-ln");
+  var caret = document.getElementById("ed-caret");
+  if (!code || !gutter || !caret) return;
+  var lineDivs = CODE_LINES.map(function (_, i) {
+    var d = document.createElement("div");
+    d.className = "ed-line";
+    code.appendChild(d);
+    var g = document.createElement("div");
+    g.textContent = i + 1;
+    gutter.appendChild(g);
+    return d;
+  });
+  function paintAll() {
+    CODE_LINES.forEach(function (line, idx) {
+      lineDivs[idx].innerHTML = line.map(function (tok) {
+        return '<span class="' + tok.c + '">' + escHtml(tok.t) + "</span>";
+      }).join("");
+    });
+    caret.style.display = "none";
+  }
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    paintAll();
+    return;
+  }
+  function paintLine(idx, upto) {
+    var line = CODE_LINES[idx], html = "", used = 0, k, tok, part;
+    for (k = 0; k < line.length; k++) {
+      tok = line[k];
+      if (used + tok.t.length <= upto) { part = tok.t; used += tok.t.length; }
+      else { part = tok.t.slice(0, upto - used); used = upto; }
+      html += '<span class="' + tok.c + '">' + escHtml(part) + "</span>";
+      if (used >= upto) break;
+    }
+    lineDivs[idx].innerHTML = html;
+    lineDivs[idx].appendChild(caret);
+    if (ln) ln.textContent = idx + 1;
+  }
+  var li = 0, ci = 0;
+  function tick() {
+    var len = lineText(CODE_LINES[li]).length;
+    if (ci <= len) {
+      paintLine(li, ci);
+      ci++;
+      setTimeout(tick, CODE_LINES[li].length === 0 ? 140 : 26);
+    } else if (li < CODE_LINES.length - 1) {
+      li++; ci = 0;
+      setTimeout(tick, 220);
+    } else {
+      setTimeout(function () {
+        lineDivs.forEach(function (d) { d.innerHTML = ""; });
+        lineDivs[0].appendChild(caret);
+        li = 0; ci = 0;
+        if (ln) ln.textContent = 1;
+        setTimeout(tick, 600);
+      }, 3000);
+    }
+  }
+  setTimeout(tick, 700);
+}
+
 /* ---------- Init ---------- */
 function init() {
   initTilt();
   initCursor();
   initReveal();
+  typeCode();
   renderRolePicker();
   renderRoleSpecific();
   initCounters();
