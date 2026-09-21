@@ -9,6 +9,7 @@ import dotenv from "dotenv";
 import helmet from "helmet";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
+import nodemailer from "nodemailer";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -26,6 +27,10 @@ const DB_FILE = path.join(DATA_DIR, "applications.json");
 const PORT = Number(process.env.PORT || 3000);
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "change_me";
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || "";
+const DISCORD_STAFF_WEBHOOK_URL = process.env.DISCORD_STAFF_WEBHOOK_URL || DISCORD_WEBHOOK_URL;
+const DISCORD_INVITE_URL = process.env.DISCORD_INVITE_URL || "https://discord.gg/empireforge";
+const SMTP_USER = process.env.SMTP_USER || "";
+const SMTP_PASS = String(process.env.SMTP_PASS || "").replace(/\s/g, "");
 
 if (ADMIN_PASSWORD === "change_me") {
   console.warn("[warn] ADMIN_PASSWORD is still the default. Set a strong one in .env / Render env vars.");
@@ -122,6 +127,81 @@ async function sendDiscordWebhook(app) {
     if (!res.ok) console.warn("[warn] Discord webhook failed:", res.status);
   } catch (err) {
     console.warn("[warn] Discord webhook error:", err.message);
+  }
+}
+
+// ---------- Applicant notifications ----------
+// Email only works if SMTP_USER + SMTP_PASS (Gmail App Password) are set.
+// Discord ping only works if a real webhook URL is set. Both fail soft.
+let mailer = null;
+if (SMTP_USER && SMTP_PASS) {
+  mailer = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: { user: SMTP_USER, pass: SMTP_PASS },
+  });
+} else {
+  console.log("[info] SMTP not configured — applicant emails off (Discord pings still work if webhook set).");
+}
+
+function firstNameOf(app) {
+  return String(app.fullName || "friend").split(" ")[0] || "friend";
+}
+
+async function sendStatusEmail(app, status) {
+  if (!mailer || !app.email || !isValidEmail(app.email)) return false;
+  const accepted = status === "accepted";
+  const name = firstNameOf(app);
+  const subject = accepted
+    ? `You're in! ${app.role} — Sarthak's Studio ⚔️`
+    : `Update on your ${app.role} application — Sarthak's Studio`;
+  const text = accepted
+    ? `Hi ${name}!\n\nGreat news — you've been ACCEPTED as ${app.role} at Sarthak's Studio!\n\nNext steps:\n1. Join our Discord: ${DISCORD_INVITE_URL}\n2. Say hi in the team channel and tell us your Discord tag (${app.discord})\n3. Watch for your first trial task within a couple of days\n\nWelcome to the team!\n— Sarthak`
+    : `Hi ${name},\n\nThanks for applying as ${app.role} at Sarthak's Studio. We've decided to go a different way this time — this is about fit and timing, not talent.\n\nPlease keep building and feel free to apply again in the future. You're always welcome in our Discord: ${DISCORD_INVITE_URL}\n\n— Sarthak`;
+  try {
+    await mailer.sendMail({
+      from: `"Sarthak's Studio" <${SMTP_USER}>`,
+      to: app.email,
+      subject,
+      text,
+    });
+    return true;
+  } catch (err) {
+    console.warn("[warn] status email failed:", err.message);
+    return false;
+  }
+}
+
+async function sendStatusDiscord(app, status) {
+  const url = DISCORD_STAFF_WEBHOOK_URL;
+  if (!url || url.includes("xxx/yyy") || url === "none") return false;
+  const accepted = status === "accepted";
+  const embed = {
+    title: `${accepted ? "✅ Accepted" : "❌ Rejected"}: ${app.fullName} — ${app.role}`,
+    color: accepted ? 5763719 : 15548997,
+    description: accepted
+      ? `Please welcome them! Reach them at **${app.discord}**`
+      : "Encourage them to keep building and reapply later.",
+    fields: [
+      { name: "Discord", value: String(app.discord || "-").slice(0, 256), inline: true },
+      { name: "Email", value: String(app.email || "-").slice(0, 256), inline: true },
+      { name: "Role", value: String(app.role || "-").slice(0, 128), inline: true },
+    ],
+    footer: { text: `Sarthak's Studio • ${app.id}` },
+    timestamp: new Date().toISOString(),
+  };
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ embeds: [embed] }),
+    });
+    if (!res.ok) console.warn("[warn] status Discord ping failed:", res.status);
+    return res.ok;
+  } catch (err) {
+    console.warn("[warn] status Discord ping error:", err.message);
+    return false;
   }
 }
 
@@ -235,7 +315,7 @@ app.get("/api/applications", requireAdmin, (_req, res) => {
   res.json({ ok: true, count: apps.length, applications: apps });
 });
 
-app.patch("/api/applications/:id", requireAdmin, (req, res) => {
+app.patch("/api/applications/:id", requireAdmin, async (req, res) => {
   const { status } = req.body || {};
   if (!VALID_STATUSES.includes(status)) {
     return res.status(400).json({ ok: false, error: "Status must be pending | accepted | rejected." });
@@ -246,8 +326,13 @@ app.patch("/api/applications/:id", requireAdmin, (req, res) => {
   apps[idx].status = status;
   apps[idx].updatedAt = new Date().toISOString();
   saveApplications(apps);
-  console.log(`[admin] ${req.params.id} -> ${status}`);
-  res.json({ ok: true, application: apps[idx] });
+  const results = await Promise.allSettled([sendStatusEmail(apps[idx], status), sendStatusDiscord(apps[idx], status)]);
+  const notified = {
+    email: results[0].status === "fulfilled" && results[0].value === true,
+    discord: results[1].status === "fulfilled" && results[1].value === true,
+  };
+  console.log(`[admin] ${req.params.id} -> ${status} (email:${notified.email} discord:${notified.discord})`);
+  res.json({ ok: true, application: apps[idx], notified });
 });
 
 app.delete("/api/applications/:id", requireAdmin, (req, res) => {

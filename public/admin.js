@@ -82,7 +82,20 @@ function setStatus(id, status) {
       }
       renderTable();
       if (currentId === id) openDetail(id);
-      toast("Marked as " + status + " ✅", "ok");
+      var bits = [];
+      if (data.notified && data.notified.discord) bits.push("Discord pinged");
+      if (data.notified && data.notified.email) bits.push("email sent");
+      var extra;
+      if (bits.length > 0) {
+        extra = " (" + bits.join(" + ") + " ✅)";
+      } else {
+        var hasEmail = false;
+        for (var e = 0; e < apps.length; e++) {
+          if (apps[e].id === id && apps[e].email) hasEmail = true;
+        }
+        extra = hasEmail ? " (notify failed ⚠️)" : " (no email on file ⚠️)";
+      }
+      toast((status === "accepted" ? "Accepted" : "Rejected") + extra, bits.length > 0 ? "ok" : "");
     });
   }).catch(function (e) { toast(e.message, "error"); });
 }
