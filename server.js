@@ -1,7 +1,7 @@
 // ============================================================
-// ROBLOX STUDIO TEAM HUB — server.js
-// Sarthak's Studio recruitment portal backend
-// Node.js + Express | JSON-file DB | Render-ready | No build step
+// SARTHAK'S STUDIO — TEAM HUB  server.js  (v2 fresh build)
+// Recruitment portal backend: Express + JSON-file DB.
+// No build step. Render-ready.
 // ============================================================
 
 import express from "express";
@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 
 dotenv.config();
 
-// ---------- Path setup (ESM has no __dirname) ----------
+// ---------- Paths (ESM has no __dirname) ----------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PUBLIC_DIR = path.join(__dirname, "public");
@@ -27,26 +27,16 @@ const PORT = Number(process.env.PORT || 3000);
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "change_me";
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || "";
 
-if (!process.env.ADMIN_PASSWORD || ADMIN_PASSWORD === "change_me") {
-  console.warn("[warn] ADMIN_PASSWORD is default. Set a strong password in .env / Render env vars.");
+if (ADMIN_PASSWORD === "change_me") {
+  console.warn("[warn] ADMIN_PASSWORD is still the default. Set a strong one in .env / Render env vars.");
 }
 
-const VALID_ROLES = [
-  "Scripter",
-  "Builder",
-  "UI Designer",
-  "Modeler",
-  "Animator",
-  "Composer",
-  "Manager",
-  "Tester",
-];
-
+const VALID_ROLES = ["Scripter", "Builder", "UI Designer", "Modeler", "Animator", "Composer", "Manager", "Tester"];
 const VALID_STATUSES = ["pending", "accepted", "rejected"];
 const VALID_COMPENSATION = ["Unpaid", "Rev-share", "Paid", "Open to discuss"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-// ---------- Ensure data folder + DB file exist ----------
+// ---------- Database (JSON file, atomic writes) ----------
 function ensureDatabase() {
   try {
     if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -58,11 +48,9 @@ function ensureDatabase() {
 }
 ensureDatabase();
 
-// ---------- DB helpers ----------
 function loadApplications() {
   try {
-    const raw = fs.readFileSync(DB_FILE, "utf-8");
-    const parsed = JSON.parse(raw);
+    const parsed = JSON.parse(fs.readFileSync(DB_FILE, "utf-8"));
     return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
@@ -70,7 +58,6 @@ function loadApplications() {
 }
 
 function saveApplications(apps) {
-  // Atomic-ish write: tmp + rename to avoid corruption on Render restarts
   const tmp = DB_FILE + ".tmp";
   fs.writeFileSync(tmp, JSON.stringify(apps, null, 2), "utf-8");
   fs.renameSync(tmp, DB_FILE);
@@ -83,7 +70,6 @@ function generateId() {
 // ---------- Security helpers ----------
 function sanitizeString(value, maxLen = 2000) {
   if (typeof value !== "string") return "";
-  // Strip < > to neutralise basic XSS payloads, trim + cap length
   return value.replace(/[<>]/g, "").trim().slice(0, maxLen);
 }
 
@@ -93,10 +79,7 @@ function sanitizeObject(obj, maxLen = 2000) {
   if (Array.isArray(obj)) return obj.map((v) => sanitizeObject(v, maxLen));
   if (typeof obj === "object") {
     const out = {};
-    for (const [k, v] of Object.entries(obj)) {
-      const cleanKey = sanitizeString(k, 120);
-      out[cleanKey] = sanitizeObject(v, maxLen);
-    }
+    for (const [k, v] of Object.entries(obj)) out[sanitizeString(k, 120)] = sanitizeObject(v, maxLen);
     return out;
   }
   return obj;
@@ -107,21 +90,17 @@ function isValidEmail(email) {
 }
 
 function getClientIp(req) {
-  // Trust Render proxy header, fall back to Express ip
   const fwd = req.headers["x-forwarded-for"];
   if (typeof fwd === "string" && fwd.length > 0) return fwd.split(",")[0].trim();
   return req.ip || "unknown";
 }
 
-// ---------- Discord webhook ----------
+// ---------- Discord webhook (fire-and-forget) ----------
 async function sendDiscordWebhook(app) {
-  if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("xxx/yyy")) {
-    console.log("[info] Discord webhook not configured — skipping.");
-    return;
-  }
+  if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("xxx/yyy") || DISCORD_WEBHOOK_URL === "none") return;
   const embed = {
     title: `New Application: ${app.role}`,
-    color: 15844367, // gold 0xF1C40F-ish (spec: 15844367)
+    color: 15844367,
     fields: [
       { name: "Name", value: String(app.fullName || "-").slice(0, 256), inline: true },
       { name: "Discord", value: String(app.discord || "-").slice(0, 256), inline: true },
@@ -146,32 +125,19 @@ async function sendDiscordWebhook(app) {
   }
 }
 
-// ---------- App setup ----------
+// ---------- App ----------
 const app = express();
-
 app.disable("x-powered-by");
-app.set("trust proxy", 1); // required on Render for correct IP + rate-limit
+app.set("trust proxy", 1); // correct IPs + rate limits behind Render's proxy
 
-app.use(
-  helmet({
-    contentSecurityPolicy: false, // allow Google Fonts + inline styles used by vanilla UI
-    crossOriginEmbedderPolicy: false,
-  })
-);
-// Same-origin friendly: reflect origin but no credentials needed
+app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 app.use(cors({ origin: true }));
 app.use(express.json({ limit: "64kb" }));
 
-// General API throttle (abuse protection, separate from strict apply limit)
-const generalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 300,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-app.use("/api/", generalLimiter);
+// Broad API throttle (the strict per-form limit is separate, below)
+app.use("/api/", rateLimit({ windowMs: 15 * 60 * 1000, max: 300, standardHeaders: true, legacyHeaders: false }));
 
-// Strict: 3 applications per IP per hour (spec)
+// Strict: 3 applications per IP per hour
 const applyLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 3,
@@ -180,11 +146,10 @@ const applyLimiter = rateLimit({
   message: { ok: false, error: "Rate limit exceeded. You can submit up to 3 applications per hour." },
 });
 
-// ---------- Validation ----------
+// ---------- Validation (mirrors the client-side rules) ----------
 function validateApplication(body) {
   const errors = [];
   const b = body || {};
-
   if (!VALID_ROLES.includes(b.role)) errors.push("Invalid role selected.");
   if (!b.fullName || b.fullName.trim().length < 2) errors.push("Full name is required (min 2 chars).");
   if (!isValidEmail(b.email)) errors.push("A valid email address is required.");
@@ -196,40 +161,28 @@ function validateApplication(body) {
   if (!b.standout || b.standout.trim().length < 10) errors.push("Standout answer needs at least 10 characters.");
   if (b.agreeNDA !== true) errors.push("You must agree to the NDA.");
   if (!VALID_COMPENSATION.includes(b.compensation)) errors.push("Invalid compensation option.");
-
-  // Role-specific answers must exist (detailed per-role checks live client-side;
-  // server enforces presence so no empty bypass is possible)
   if (!b.roleAnswers || typeof b.roleAnswers !== "object" || Object.keys(b.roleAnswers).length === 0) {
     errors.push("Role-specific answers are required.");
   }
-
-  // Length caps (DoS / storage protection)
-  const tooLong = (v, n) => typeof v === "string" && v.length > n;
-  if (tooLong(b.fullName, 120)) errors.push("Full name too long.");
-  if (tooLong(b.whyJoin, 3000)) errors.push("Why-join answer too long (max ~3000 chars).");
-  if (tooLong(b.standout, 3000)) errors.push("Standout answer too long.");
-
+  if (typeof b.fullName === "string" && b.fullName.length > 120) errors.push("Full name too long.");
+  if (typeof b.whyJoin === "string" && b.whyJoin.length > 3000) errors.push("Why-join answer too long.");
+  if (typeof b.standout === "string" && b.standout.length > 3000) errors.push("Standout answer too long.");
   return errors;
 }
 
 // ---------- Routes ----------
-
-// Health check (Render + uptime monitors)
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, time: new Date().toISOString() });
 });
 
-// Submit application
 app.post("/api/apply", applyLimiter, async (req, res) => {
   const ip = getClientIp(req);
   const clean = sanitizeObject(req.body || {});
-
   const errors = validateApplication(clean);
   if (errors.length > 0) {
     console.log(`[apply] rejected from ${ip}: ${errors.join(" | ")}`);
     return res.status(400).json({ ok: false, errors });
   }
-
   const record = {
     id: generateId(),
     role: clean.role,
@@ -252,13 +205,11 @@ app.post("/api/apply", applyLimiter, async (req, res) => {
     ip,
     createdAt: new Date().toISOString(),
   };
-
   try {
     const apps = loadApplications();
     apps.push(record);
     saveApplications(apps);
     console.log(`[apply] ${record.role} — ${record.fullName} (${ip}) id=${record.id}`);
-    // Fire-and-forget webhook (don't block the response)
     sendDiscordWebhook(record).catch(() => {});
     return res.status(201).json({ ok: true, id: record.id });
   } catch (err) {
@@ -267,29 +218,23 @@ app.post("/api/apply", applyLimiter, async (req, res) => {
   }
 });
 
-// Admin login — verifies env password
 app.post("/api/admin/login", (req, res) => {
   const { password } = req.body || {};
-  if (typeof password === "string" && password === ADMIN_PASSWORD) {
-    return res.json({ ok: true });
-  }
+  if (typeof password === "string" && password === ADMIN_PASSWORD) return res.json({ ok: true });
   return res.status(401).json({ ok: false, error: "Invalid password." });
 });
 
-// Admin auth middleware (header-based, no sessions to keep it single-file)
 function requireAdmin(req, res, next) {
   const pw = req.headers["x-admin-password"];
   if (typeof pw === "string" && pw === ADMIN_PASSWORD) return next();
   return res.status(401).json({ ok: false, error: "Unauthorized." });
 }
 
-// List all applications (newest first)
 app.get("/api/applications", requireAdmin, (_req, res) => {
   const apps = loadApplications().sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
   res.json({ ok: true, count: apps.length, applications: apps });
 });
 
-// Update status
 app.patch("/api/applications/:id", requireAdmin, (req, res) => {
   const { status } = req.body || {};
   if (!VALID_STATUSES.includes(status)) {
@@ -305,7 +250,6 @@ app.patch("/api/applications/:id", requireAdmin, (req, res) => {
   res.json({ ok: true, application: apps[idx] });
 });
 
-// Delete application
 app.delete("/api/applications/:id", requireAdmin, (req, res) => {
   const apps = loadApplications();
   const idx = apps.findIndex((a) => a.id === req.params.id);
@@ -317,7 +261,7 @@ app.delete("/api/applications/:id", requireAdmin, (req, res) => {
 });
 
 // ---------- Static frontend ----------
-// Versioned assets (?v=N) cache for a year; HTML never caches so deploys show up on plain refresh.
+// Pages never cache (deploys appear on plain refresh); versioned assets (?v=N) cache for a year.
 app.use(
   express.static(PUBLIC_DIR, {
     maxAge: "1h",
@@ -332,7 +276,6 @@ app.use(
   })
 );
 
-// Fallback to index for unknown non-API routes
 app.get("*", (req, res, next) => {
   if (req.path.startsWith("/api/")) return next();
   res.sendFile(path.join(PUBLIC_DIR, "index.html"));

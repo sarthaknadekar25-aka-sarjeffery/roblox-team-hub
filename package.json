@@ -1,6 +1,6 @@
 {
   "name": "roblox-team-hub",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Recruitment portal for Sarthak's Studio (Roblox)",
   "type": "module",
   "main": "server.js",
