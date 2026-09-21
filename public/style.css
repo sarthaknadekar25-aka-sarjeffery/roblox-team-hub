@@ -116,7 +116,7 @@ a{color:inherit}
 
 /* --- Live scripting panel --- */
 .hero-visual{position:relative;display:flex;justify-content:center;min-height:300px}
-.editor{width:min(430px,100%);margin-top:.5rem;background:#0a0806;border:1px solid var(--line);
+.editor{width:min(430px,100%);margin-top:.5rem;background:#100d0b;border:1px solid var(--line);
   border-radius:14px;box-shadow:var(--shadow);overflow:hidden;text-align:left;
   animation:editorIn .7s ease backwards}
 @keyframes editorIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
@@ -126,11 +126,12 @@ a{color:inherit}
 .ed-dot.r{background:#ff5f57}.ed-dot.y{background:#febc2e}.ed-dot.g{background:#28c840}
 .ed-tab{margin-left:.4rem;font-size:.78rem;font-weight:700;color:var(--text);background:var(--input);
   border:1px solid var(--line);border-bottom:none;border-radius:8px 8px 0 0;padding:.25rem .7rem;white-space:nowrap}
+.ed-x{color:var(--muted);margin-left:.35rem;font-weight:400}
 .ed-live{margin-left:auto;display:inline-flex;align-items:center;gap:.35rem;font-size:.72rem;
   font-weight:700;color:var(--ember);text-transform:uppercase;letter-spacing:.1em}
 .editor-body{display:flex;min-height:300px;padding:.8rem 0;font-family:ui-monospace,'Cascadia Code',Consolas,monospace;
   font-size:.8rem;line-height:1.7}
-.ed-gutter{padding:0 .6rem 0 .9rem;text-align:right;color:#5a5248;user-select:none;flex:none}
+.ed-gutter{padding:0 .6rem 0 .9rem;text-align:right;color:#5a5248;user-select:none;flex:none;border-right:1px solid var(--line)}
 .editor-code{flex:1;padding-right:.9rem;white-space:pre-wrap;word-break:break-word;color:var(--text)}
 .ed-line{min-height:1.7em}
 .tok-k{color:var(--ember);font-weight:700}.tok-s{color:#9ece8f}.tok-n{color:var(--brass)}
@@ -144,7 +145,7 @@ a{color:inherit}
 .orbit-chip{position:absolute;padding:.35rem .8rem;border-radius:999px;font-size:.75rem;font-weight:700;
   background:var(--card);border:1px solid rgba(255,106,43,.45);color:var(--ember);
   box-shadow:var(--shadow);animation:chipFloat 4.5s ease-in-out infinite}
-.chip-a{top:6%;left:8%} .chip-b{top:44%;right:2%;animation-delay:-1.5s} .chip-c{bottom:8%;left:16%;animation-delay:-3s}
+.chip-a{top:2%;left:0} .chip-b{top:36%;right:-8px;animation-delay:-1.5s} .chip-c{bottom:0;left:8%;animation-delay:-3s}
 @keyframes chipFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 
 /* ---------- Sections ---------- */

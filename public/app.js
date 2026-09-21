@@ -517,21 +517,49 @@ function launchConfetti() {
   })();
 }
 
-/* ---------- Live code panel: types Luau on loop ---------- */
-var CODE_LINES = [
-  [{ t: "-- ⚔ siege combat server", c: "tok-c" }],
-  [{ t: "local ", c: "tok-k" }, { t: "Combat = {}", c: "tok-p" }],
-  [{ t: "local ", c: "tok-k" }, { t: "DAMAGE = ", c: "tok-p" }, { t: "25", c: "tok-n" }],
-  [],
-  [{ t: "function ", c: "tok-k" }, { t: "Combat.swing", c: "tok-f" }, { t: "(player, target)", c: "tok-p" }],
-  [{ t: "  local ", c: "tok-k" }, { t: "sword = player.Backpack:FindFirstChild(", c: "tok-p" }, { t: '"Sword"', c: "tok-s" }, { t: ")", c: "tok-p" }],
-  [{ t: "  if not ", c: "tok-k" }, { t: "sword ", c: "tok-p" }, { t: "then return end", c: "tok-k" }],
-  [{ t: "  target:TakeDamage(DAMAGE)", c: "tok-p" }],
-  [{ t: "  game.Reverb.Steel:Play()", c: "tok-p" }],
-  [{ t: "end", c: "tok-k" }],
-  [],
-  [{ t: "return ", c: "tok-k" }, { t: "Combat", c: "tok-p" }]
+/* ---------- Live code panel: a human writing Luau ----------
+   Cycles varied snippets with bursts, think-pauses, typos that get
+   backspaced, then wipes the board like holding backspace. Loops. */
+var SNIPPETS = [
+  { file: "CombatServer.luau", lines: [
+    [{ t: "-- ⚔ siege combat", c: "tok-c" }],
+    [{ t: "local ", c: "tok-k" }, { t: "DMG = ", c: "tok-p" }, { t: "25", c: "tok-n" }],
+    [],
+    [{ t: "function ", c: "tok-k" }, { t: "swing", c: "tok-f" }, { t: "(p, t)", c: "tok-p" }],
+    [{ t: "  local ", c: "tok-k" }, { t: "s = p.Sword", c: "tok-p" }],
+    [{ t: "  if ", c: "tok-k" }, { t: "s ", c: "tok-p" }, { t: "then", c: "tok-k" }],
+    [{ t: "    t:TakeDamage(DMG)", c: "tok-p" }],
+    [{ t: "    playSteel()", c: "tok-p" }],
+    [{ t: "  ", c: "tok-p" }, { t: "end", c: "tok-k" }],
+    [{ t: "end", c: "tok-k" }]
+  ] },
+  { file: "DataVault.luau", lines: [
+    [{ t: "-- 💾 player data", c: "tok-c" }],
+    [{ t: "local ", c: "tok-k" }, { t: "Vault = {}", c: "tok-p" }],
+    [],
+    [{ t: "function ", c: "tok-k" }, { t: "Vault.load", c: "tok-f" }, { t: "(p)", c: "tok-p" }],
+    [{ t: "  return ", c: "tok-k" }, { t: "{", c: "tok-p" }],
+    [{ t: "    gold = ", c: "tok-p" }, { t: "100", c: "tok-n" }, { t: ",", c: "tok-p" }],
+    [{ t: "    level = ", c: "tok-p" }, { t: "1", c: "tok-n" }, { t: ",", c: "tok-p" }],
+    [{ t: "  }", c: "tok-p" }],
+    [{ t: "end", c: "tok-k" }],
+    [],
+    [{ t: "return ", c: "tok-k" }, { t: "Vault", c: "tok-p" }]
+  ] },
+  { file: "CastleGate.luau", lines: [
+    [{ t: "-- 🏰 gate tween", c: "tok-c" }],
+    [{ t: "local ", c: "tok-k" }, { t: "gate = script.Parent", c: "tok-p" }],
+    [],
+    [{ t: "function ", c: "tok-k" }, { t: "open", c: "tok-f" }, { t: "()", c: "tok-p" }],
+    [{ t: "  gate.CanCollide = ", c: "tok-p" }, { t: "false", c: "tok-k" }],
+    [{ t: "  gate.Transparency = ", c: "tok-p" }, { t: "0.5", c: "tok-n" }],
+    [{ t: "  wait(", c: "tok-p" }, { t: "2", c: "tok-n" }, { t: ")", c: "tok-p" }],
+    [{ t: '  gate:Destroy()', c: "tok-p" }],
+    [{ t: "  print(", c: "tok-p" }, { t: '"Gate open!"', c: "tok-s" }, { t: ")", c: "tok-p" }],
+    [{ t: "end", c: "tok-k" }]
+  ] }
 ];
+var TYPO_LETTERS = "asdfjklqwer";
 
 function lineText(line) {
   var s = "";
@@ -542,64 +570,152 @@ function lineText(line) {
 function typeCode() {
   var code = document.getElementById("ed-code");
   var gutter = document.getElementById("ed-gutter");
-  var ln = document.getElementById("ed-ln");
+  var lnEl = document.getElementById("ed-ln");
+  var colEl = document.getElementById("ed-col");
+  var fileEl = document.getElementById("ed-file");
   var caret = document.getElementById("ed-caret");
   if (!code || !gutter || !caret) return;
-  var lineDivs = CODE_LINES.map(function (_, i) {
+
+  /* build enough reusable line rows for the longest snippet */
+  var maxLines = 0, s, i;
+  for (s = 0; s < SNIPPETS.length; s++) maxLines = Math.max(maxLines, SNIPPETS[s].lines.length);
+  var lineDivs = [];
+  for (i = 0; i < maxLines; i++) {
     var d = document.createElement("div");
     d.className = "ed-line";
     code.appendChild(d);
-    var g = document.createElement("div");
-    g.textContent = i + 1;
-    gutter.appendChild(g);
-    return d;
-  });
-  function paintAll() {
-    CODE_LINES.forEach(function (line, idx) {
-      lineDivs[idx].innerHTML = line.map(function (tok) {
-        return '<span class="' + tok.c + '">' + escHtml(tok.t) + "</span>";
-      }).join("");
-    });
-    caret.style.display = "none";
+    lineDivs.push(d);
   }
-  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    paintAll();
-    return;
+
+  function span(c, t) { return '<span class="' + c + '">' + escHtml(t) + "</span>"; }
+  function fullLine(line) {
+    return line.map(function (tok) { return span(tok.c, tok.t); }).join("");
   }
-  function paintLine(idx, upto) {
-    var line = CODE_LINES[idx], html = "", used = 0, k, tok, part;
-    for (k = 0; k < line.length; k++) {
-      tok = line[k];
+  function lineLen(line) {
+    var n = 0;
+    for (var k = 0; k < line.length; k++) n += line[k].t.length;
+    return n;
+  }
+  function partialLine(line, upto) {
+    var html = "", used = 0;
+    for (var k = 0; k < line.length; k++) {
+      var tok = line[k], part;
       if (used + tok.t.length <= upto) { part = tok.t; used += tok.t.length; }
       else { part = tok.t.slice(0, upto - used); used = upto; }
-      html += '<span class="' + tok.c + '">' + escHtml(part) + "</span>";
+      html += span(tok.c, part);
       if (used >= upto) break;
     }
-    lineDivs[idx].innerHTML = html;
-    lineDivs[idx].appendChild(caret);
-    if (ln) ln.textContent = idx + 1;
+    return html;
   }
-  var li = 0, ci = 0;
-  function tick() {
-    var len = lineText(CODE_LINES[li]).length;
-    if (ci <= len) {
-      paintLine(li, ci);
+
+  var si = Math.floor(Math.random() * SNIPPETS.length);
+  var li = 0, ci = 0, scratch = "";
+
+  /* paint current state: finished lines, live line + scratch, caret, counters */
+  function paint() {
+    var lines = SNIPPETS[si].lines, k, html;
+    for (k = 0; k < maxLines; k++) {
+      if (k < lines.length) {
+        if (k < li) html = fullLine(lines[k]);
+        else if (k === li) html = partialLine(lines[k], ci) + (scratch ? span("tok-p", scratch) : "");
+        else html = "";
+      } else html = "";
+      lineDivs[k].innerHTML = html;
+    }
+    lineDivs[Math.min(li, lines.length - 1)].appendChild(caret);
+    gutter.innerHTML = "";
+    for (k = 0; k < lines.length; k++) {
+      var g = document.createElement("div");
+      g.textContent = k + 1;
+      gutter.appendChild(g);
+    }
+    if (fileEl) fileEl.textContent = SNIPPETS[si].file;
+    if (lnEl) lnEl.textContent = li + 1;
+    if (colEl) colEl.textContent = ci + scratch.length + 1;
+  }
+
+  /* human keystroke rhythm: bursts, punctuation pauses, think pauses */
+  function humanDelay(lastChar) {
+    var d = 22 + Math.random() * 64;
+    if ("({,[=:".indexOf(lastChar) !== -1) d += 140;
+    if (Math.random() < 0.07) d += 380;
+    return d;
+  }
+
+  function typeStep() {
+    var lines = SNIPPETS[si].lines;
+    var len = lineLen(lines[li]);
+    if (ci === 0 && len > 10 && lines[li].length > 0 &&
+        lines[li][0].t.charAt(0) !== "-" && Math.random() < 0.35) {
+      startTypo();
+      return;
+    }
+    if (ci < len) {
       ci++;
-      setTimeout(tick, CODE_LINES[li].length === 0 ? 140 : 26);
-    } else if (li < CODE_LINES.length - 1) {
+      paint();
+      var lastChar = lineText(lines[li]).charAt(ci - 1);
+      setTimeout(typeStep, humanDelay(lastChar));
+    } else if (li < lines.length - 1) {
       li++; ci = 0;
-      setTimeout(tick, 220);
+      paint();
+      setTimeout(typeStep, 200 + Math.random() * 200);
     } else {
-      setTimeout(function () {
-        lineDivs.forEach(function (d) { d.innerHTML = ""; });
-        lineDivs[0].appendChild(caret);
-        li = 0; ci = 0;
-        if (ln) ln.textContent = 1;
-        setTimeout(tick, 600);
-      }, 3000);
+      paint();
+      setTimeout(sweepDelete, 2400);
     }
   }
-  setTimeout(tick, 700);
+
+  /* typo: fat-finger a few chars, notice, backspace them away */
+  function startTypo() {
+    scratch = "";
+    var n = 2 + Math.floor(Math.random() * 2);
+    for (var k = 0; k < n; k++) scratch += TYPO_LETTERS.charAt(Math.floor(Math.random() * TYPO_LETTERS.length));
+    paint();
+    setTimeout(eraseScratch, 420);
+  }
+  function eraseScratch() {
+    scratch = scratch.slice(0, -1);
+    paint();
+    if (scratch.length > 0) setTimeout(eraseScratch, 45);
+    else setTimeout(typeStep, 180);
+  }
+
+  /* hold-backspace wipe, then a fresh random snippet */
+  function sweepDelete() {
+    var lines = SNIPPETS[si].lines;
+    if (li > 0 || ci > 0) {
+      ci -= 9;
+      while (ci < 0 && li > 0) { li--; ci = lineLen(lines[li]) + ci; }
+      if (ci < 0) ci = 0;
+      paint();
+      setTimeout(sweepDelete, 24);
+    } else {
+      var next = si;
+      while (next === si) next = Math.floor(Math.random() * SNIPPETS.length);
+      si = next; li = 0; ci = 0; scratch = "";
+      paint();
+      setTimeout(typeStep, 600);
+    }
+  }
+
+  /* reduced motion: show the first script finished, no animation */
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    si = 0;
+    var all = SNIPPETS[0].lines;
+    for (var r = 0; r < all.length; r++) lineDivs[r].innerHTML = fullLine(all[r]);
+    gutter.innerHTML = "";
+    for (var q = 0; q < all.length; q++) {
+      var gg = document.createElement("div");
+      gg.textContent = q + 1;
+      gutter.appendChild(gg);
+    }
+    if (fileEl) fileEl.textContent = SNIPPETS[0].file;
+    caret.style.display = "none";
+    return;
+  }
+
+  paint();
+  setTimeout(typeStep, 700);
 }
 
 /* ---------- Init ---------- */
