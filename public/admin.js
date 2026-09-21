@@ -87,7 +87,7 @@ function setStatus(id, status) {
         for (var e = 0; e < apps.length; e++) {
           if (apps[e].id === id && apps[e].email) hasEmail = true;
         }
-        extra = hasEmail ? " (notify failed ⚠️)" : " (no email on file ⚠️)";
+        extra = hasEmail ? " (notify failed ⚠️)" : " (no contact on file ⚠️)";
       }
       toast((status === "accepted" ? "Accepted" : "Rejected") + extra, bits.length > 0 ? "ok" : "");
     });

@@ -221,8 +221,14 @@ function validateApplication(body) {
   if (!VALID_ROLES.includes(b.role)) errors.push("Invalid role selected.");
   if (!b.fullName || b.fullName.trim().length < 2) errors.push("Full name is required (min 2 chars).");
   if (b.email && String(b.email).trim() !== "" && !isValidEmail(b.email)) errors.push("Invalid email address (or leave it blank).");
-  if (!b.discord || b.discord.trim().length < 2) errors.push("Discord tag is required.");
-  if (!b.robloxUsername || b.robloxUsername.trim().length < 2) errors.push("Roblox username is required.");
+  const hasEmail = !!(b.email && String(b.email).trim() !== "");
+  const hasDiscord = !!(b.discord && b.discord.trim().length >= 2);
+  const hasRoblox = !!(b.robloxUsername && b.robloxUsername.trim().length >= 2);
+  if (!hasEmail && !hasDiscord && !hasRoblox) {
+    errors.push("At least one contact is required (Email, Discord, or Roblox username).");
+  }
+  if (b.discord && b.discord.trim().length > 0 && b.discord.trim().length < 2) errors.push("Discord tag looks too short.");
+  if (b.robloxUsername && b.robloxUsername.trim().length > 0 && b.robloxUsername.trim().length < 2) errors.push("Roblox username looks too short.");
   if (!b.timezone || b.timezone.trim().length < 2) errors.push("Country / Timezone is required.");
   if (!b.hoursPerWeek || String(b.hoursPerWeek).trim().length === 0) errors.push("Hours per week is required.");
   if (!b.whyJoin || b.whyJoin.trim().length < 20) errors.push("Why join needs at least 20 characters.");

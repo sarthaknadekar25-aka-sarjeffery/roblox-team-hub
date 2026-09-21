@@ -354,9 +354,13 @@ function validateStep2() {
   function need(cond, name, msg) { setErr(name, cond ? "" : msg); if (!cond) ok = false; }
   need(u.fullName.length >= 2, "fullName", "Enter your full name.");
   need(u.email === "" || EMAIL_RE.test(u.email), "email", "Enter a valid email, or leave it blank.");
-  need(u.discord.length >= 2, "discord", "Discord tag is required.");
-  need(u.robloxUsername.length >= 2, "robloxUsername", "Roblox username is required.");
-  need(u.robloxLink.length > 8 && /^https?:\/\//i.test(u.robloxLink), "robloxLink", "Paste your full Roblox profile URL (https://…).");
+  need(u.discord === "" || u.discord.length >= 2, "discord", "Discord tag looks too short.");
+  need(u.robloxUsername === "" || u.robloxUsername.length >= 2, "robloxUsername", "Roblox username looks too short.");
+  need(u.robloxLink === "" || (u.robloxLink.length > 8 && /^https?:\/\//i.test(u.robloxLink)), "robloxLink", "Profile link must start with http(s)://, or leave it blank.");
+  if (u.email === "" && u.discord === "" && u.robloxUsername === "") {
+    setErr("discord", "Give at least one way to reach you: Email, Discord, or Roblox.");
+    ok = false;
+  }
   need(u.country.length >= 2, "country", "Country is required.");
   need(u.timezone.length >= 2, "timezone", "Timezone is required.");
   need(!!u.hoursPerWeek, "hoursPerWeek", "Select hours per week.");
@@ -395,7 +399,7 @@ function renderReview() {
   var rq = ROLE_QUESTIONS[state.role] || [];
   var html = '<div class="review-sec"><h4>🎯 Role — ' + escHtml(state.role) + "</h4></div>";
   [["Name", u.fullName], ["Email", u.email], ["Discord", u.discord],
-   ["Roblox", u.robloxUsername + " — " + u.robloxLink], ["Age", u.age || "—"],
+   ["Roblox", [u.robloxUsername, u.robloxLink].filter(Boolean).join(" — ")], ["Age", u.age || "—"],
    ["Country", u.country], ["Timezone", u.timezone], ["Hours/week", u.hoursPerWeek],
    ["Compensation", u.compensation], ["Portfolio", u.portfolio || "—"],
    ["Why join", u.whyJoin], ["Standout", u.standout]

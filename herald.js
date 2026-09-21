@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits, EmbedBuilder } from "discord.js";
 
 let herald = null;
 let guildId = "";
@@ -10,7 +10,7 @@ export function initHerald({ token, guildId: gid }) {
     return null;
   }
   herald = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
-  herald.once("ready", () => {
+  onReadyOnce(() => {
     console.log(`[discord] herald online as ${herald.user.tag}`);
   });
   herald.login(token).catch((err) => {
@@ -24,12 +24,19 @@ function firstName(text) {
   return String(text || "friend").split(" ")[0] || "friend";
 }
 
+function onReadyOnce(fn) {
+  let done = false;
+  const wrap = (...args) => { if (done) return; done = true; fn(...args); };
+  herald.once("ready", wrap);
+  herald.once("clientReady", wrap);
+}
+
 function waitForHerald(timeoutMs = 15000) {
   if (!herald) return Promise.resolve(false);
   if (typeof herald.isReady === "function" && herald.isReady()) return Promise.resolve(true);
   return new Promise((resolve) => {
     const timer = setTimeout(() => resolve(false), timeoutMs);
-    herald.once("ready", () => {
+    onReadyOnce(() => {
       clearTimeout(timer);
       resolve(true);
     });
@@ -68,10 +75,35 @@ export async function sendVerdictDM(app, status) {
       console.log(`[discord] no server member matches "${app.discord}" — DM skipped`);
       return false;
     }
-    const msg = accepted
-      ? `⚔️ **You're in, ${name}!**\n\nYou've been **ACCEPTED** as **${app.role}** at **Sarthak's Studio**!\n\nNext steps:\n1. Say hi in the team channel\n2. Watch for your first trial task within a couple of days\n\nWelcome to the team!`
-      : `Hi ${name},\n\nThanks for applying as **${app.role}** at **Sarthak's Studio**. We've decided to go a different way this time — fit and timing, not talent.\n\nKeep building, and feel free to apply again later. ⚔️`;
-    await member.send(msg);
+    const embed = accepted
+      ? new EmbedBuilder()
+        .setColor(0xff6a2b)
+        .setTitle(`⚔️ Application Accepted`)
+        .setDescription(
+          `Congratulations, **${name}**.\n\n` +
+          `After reviewing your application, we would like to welcome you as our new **${app.role}** at **Sarthak's Studio**. We were impressed by your work and believe you will be a strong addition to the team.`
+        )
+        .addFields(
+          { name: "🎯 Role", value: String(app.role), inline: true },
+          { name: "⏰ First task", value: "Arrives within a few days 📝", inline: true },
+          { name: "📌 Next steps", value: "1️⃣ Introduce yourself in the team channel 💬\n2️⃣ Share your timezone so we can plan around you 🌍\n3️⃣ Await your trial task and give it your best ⚔️" }
+        )
+        .setFooter({ text: `Sarthak's Studio • ${app.id}` })
+        .setTimestamp()
+      : new EmbedBuilder()
+        .setColor(0xc9a24b)
+        .setTitle(`Application Update`)
+        .setDescription(
+          `Hello **${name}**,\n\n` +
+          `Thank you for applying for the **${app.role}** position, and for the time and effort you put into your application.\n\n` +
+          `After careful review, we have decided to move forward with other candidates at this time. This decision reflects our current team needs — not your abilities, which we genuinely respect.`
+        )
+        .addFields(
+          { name: "🔄 Going forward", value: "You are welcome to reapply in the future. We encourage you to keep building and refining your craft. 💛" }
+        )
+        .setFooter({ text: `Sarthak's Studio • ${app.id}` })
+        .setTimestamp();
+    await member.send({ embeds: [embed] });
     console.log(`[discord] verdict DM sent to ${member.user.username}`);
     return true;
   } catch (err) {
