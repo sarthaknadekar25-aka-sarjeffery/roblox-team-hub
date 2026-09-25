@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: roblox-team-hub
+    env: static
+    buildCommand: npm run build
+    staticPublishPath: ./public
